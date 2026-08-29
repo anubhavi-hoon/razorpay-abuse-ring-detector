@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "razorpay-abuse-ring-detector"
+version = "0.1.0"
+description = "Coordinated promotional abuse detection using lightweight ML and graph analysis."
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

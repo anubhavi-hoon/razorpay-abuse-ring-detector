@@ -13,16 +13,16 @@
 
 Deliverables:
 
-- [ ] Initialize Python packaging and the minimal `src/abuse_detector` package.
-- [ ] Add pinned direct dependencies and test tooling.
-- [ ] Add `.gitignore`, `.env.example`, and concise setup/run commands in `README.md`.
-- [ ] Add one import/smoke test.
+- [x] Initialize Python packaging and the minimal `src/abuse_detector` package.
+- [x] Add pinned direct dependencies and test tooling.
+- [x] Add `.gitignore`, `.env.example`, and concise setup/run commands in `README.md`.
+- [x] Add one import/smoke test.
 
 Acceptance:
 
-- [ ] A clean environment can install the project.
-- [ ] The test command passes.
-- [ ] No application features or frontend scaffolding are added.
+- [x] A clean environment can install the project.
+- [x] The test command passes.
+- [x] No application features or frontend scaffolding are added.
 
 ## Milestone 1 — Seeded synthetic data
 
