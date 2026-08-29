@@ -4,7 +4,7 @@ Buildathon project for detecting coordinated multi-account promotional abuse usi
 
 ## Current status
 
-Seeded synthetic data generation is complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
+Validated, cutoff-safe account feature generation is complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
 
 ## Setup
 
@@ -29,5 +29,13 @@ generate-demo-data --output-dir data/raw
 ```
 
 Defaults produce 2,000 synthetic accounts, 10,000 transactions, and 15 planted abuse rings. Use `--help` to change the seed or dataset size. The `label` and `ring_label` columns are synthetic ground truth reserved for training and evaluation; they must not be used as production features.
+
+## Build account features
+
+```bash
+build-account-features --accounts data/raw/accounts.csv --transactions data/raw/transactions.csv --output-dir data/processed
+```
+
+The command validates both input contracts and writes `account_features.csv`, separate `account_labels.csv` ground truth, and `feature_metadata.json`. Pass `--cutoff` with a UTC ISO-8601 timestamp to reproduce a historical observation point; otherwise the latest source timestamp is used.
 
 See [`SPEC.md`](SPEC.md) for the product contract and [`ARCHITECTURE.md`](ARCHITECTURE.md) for technical decisions.

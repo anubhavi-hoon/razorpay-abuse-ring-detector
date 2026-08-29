@@ -9,6 +9,7 @@ import json
 import random
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 ACCOUNT_FIELDS = (
@@ -58,6 +59,101 @@ class Transaction:
     amount: str
     created_at: str
     status: str
+
+
+class DataValidationError(ValueError):
+    """Raised when an input CSV violates the source data contract."""
+
+
+def parse_utc_timestamp(value: str, location: str = "timestamp") -> datetime:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise DataValidationError(f"{location}: invalid ISO-8601 timestamp {value!r}") from error
+    if parsed.tzinfo is None or parsed.utcoffset() != timedelta(0):
+        raise DataValidationError(f"{location}: timestamp must be UTC")
+    return parsed
+
+
+def load_dataset(accounts_path: Path, transactions_path: Path) -> tuple[list[Account], list[Transaction]]:
+    """Load and validate the complete source CSV contract."""
+    account_rows = _read_rows(accounts_path, ACCOUNT_FIELDS)
+    transaction_rows = _read_rows(transactions_path, TRANSACTION_FIELDS)
+
+    accounts: list[Account] = []
+    account_ids: set[str] = set()
+    account_created: dict[str, datetime] = {}
+    for row_number, row in enumerate(account_rows, start=2):
+        location = f"{accounts_path}:{row_number}"
+        _require_values(row, ACCOUNT_FIELDS[:-1], location)
+        if row["account_id"] in account_ids:
+            raise DataValidationError(f"{location}: duplicate account_id {row['account_id']!r}")
+        if row["label"] not in {"0", "1"}:
+            raise DataValidationError(f"{location}: label must be 0 or 1")
+        created = parse_utc_timestamp(row["created_at"], f"{location} created_at")
+        account = Account(
+            account_id=row["account_id"],
+            created_at=row["created_at"],
+            email_hash=row["email_hash"],
+            phone_hash=row["phone_hash"],
+            device_id=row["device_id"],
+            ip_address=row["ip_address"],
+            payment_instrument_id=row["payment_instrument_id"],
+            label=int(row["label"]),
+            ring_label=row["ring_label"],
+        )
+        accounts.append(account)
+        account_ids.add(account.account_id)
+        account_created[account.account_id] = created
+
+    transactions: list[Transaction] = []
+    transaction_ids: set[str] = set()
+    for row_number, row in enumerate(transaction_rows, start=2):
+        location = f"{transactions_path}:{row_number}"
+        required = tuple(field for field in TRANSACTION_FIELDS if field != "promotion_id")
+        _require_values(row, required, location)
+        if row["transaction_id"] in transaction_ids:
+            raise DataValidationError(f"{location}: duplicate transaction_id {row['transaction_id']!r}")
+        if row["account_id"] not in account_ids:
+            raise DataValidationError(f"{location}: unknown account_id {row['account_id']!r}")
+        try:
+            amount = Decimal(row["amount"])
+        except InvalidOperation as error:
+            raise DataValidationError(f"{location}: amount must be numeric") from error
+        if not amount.is_finite() or amount < 0:
+            raise DataValidationError(f"{location}: amount must be a finite non-negative number")
+        if row["status"] not in {"succeeded", "failed", "refunded"}:
+            raise DataValidationError(f"{location}: invalid status {row['status']!r}")
+        created = parse_utc_timestamp(row["created_at"], f"{location} created_at")
+        if created < account_created[row["account_id"]]:
+            raise DataValidationError(f"{location}: transaction predates its account")
+        transaction = Transaction(**row)
+        transactions.append(transaction)
+        transaction_ids.add(transaction.transaction_id)
+
+    return accounts, transactions
+
+
+def _read_rows(path: Path, expected_fields: tuple[str, ...]) -> list[dict[str, str]]:
+    try:
+        with path.open(encoding="utf-8", newline="") as file:
+            reader = csv.DictReader(file)
+            if tuple(reader.fieldnames or ()) != expected_fields:
+                raise DataValidationError(
+                    f"{path}: expected columns {expected_fields}, got {tuple(reader.fieldnames or ())}"
+                )
+            rows = list(reader)
+            if any(None in row for row in rows):
+                raise DataValidationError(f"{path}: row contains extra columns")
+            return rows
+    except csv.Error as error:
+        raise DataValidationError(f"{path}: malformed CSV: {error}") from error
+
+
+def _require_values(row: dict[str, str], fields: tuple[str, ...], location: str) -> None:
+    missing = [field for field in fields if not row[field]]
+    if missing:
+        raise DataValidationError(f"{location}: missing value for {', '.join(missing)}")
 
 
 def _timestamp(value: datetime) -> str:
@@ -215,4 +311,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-

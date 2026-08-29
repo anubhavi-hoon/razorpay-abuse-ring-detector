@@ -44,16 +44,16 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Validate both CSV contracts with actionable failures.
-- [ ] Build the minimum account features listed in `SPEC.md` at an observation cutoff.
-- [ ] Save the processed feature table and feature metadata.
-- [ ] Test invalid input, representative feature values, determinism, and label leakage.
+- [x] Validate both CSV contracts with actionable failures.
+- [x] Build the minimum account features listed in `SPEC.md` at an observation cutoff.
+- [x] Save the processed feature table and feature metadata.
+- [x] Test invalid input, representative feature values, determinism, and label leakage.
 
 Acceptance:
 
-- [ ] Every feature has a definition and stable name.
-- [ ] Training labels and future events cannot enter feature columns.
-- [ ] The default dataset processes on a laptop without special infrastructure.
+- [x] Every feature has a definition and stable name.
+- [x] Training labels and future events cannot enter feature columns.
+- [x] The default dataset processes on a laptop without special infrastructure.
 
 ## Milestone 3 — ML baseline and evaluation
 
