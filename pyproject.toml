@@ -8,6 +8,8 @@ version = "0.1.0"
 description = "Coordinated promotional abuse detection using lightweight ML and graph analysis."
 requires-python = ">=3.11"
 
+[project.scripts]
+generate-demo-data = "abuse_detector.data:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
-

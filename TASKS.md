@@ -28,17 +28,17 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Implement the account/transaction schemas from `SPEC.md`.
-- [ ] Generate legitimate users, benign shared entities, and planted abuse rings.
-- [ ] Provide a CLI with seed, account count, ring count, and output directory options.
-- [ ] Write a compact dataset manifest with counts and seed.
-- [ ] Test determinism, unique IDs, foreign keys, and planted-ring presence.
+- [x] Implement the account/transaction schemas from `SPEC.md`.
+- [x] Generate legitimate users, benign shared entities, and planted abuse rings.
+- [x] Provide a CLI with seed, account count, ring count, and output directory options.
+- [x] Write a compact dataset manifest with counts and seed.
+- [x] Test determinism, unique IDs, foreign keys, and planted-ring presence.
 
 Acceptance:
 
-- [ ] The default command produces valid `accounts.csv` and `transactions.csv`.
-- [ ] Repeating a run with the same inputs produces identical files.
-- [ ] Labels are present for evaluation but isolated from production features.
+- [x] The default command produces valid `accounts.csv` and `transactions.csv`.
+- [x] Repeating a run with the same inputs produces identical files.
+- [x] Labels are present for evaluation but isolated from production features.
 
 ## Milestone 2 — Validation and account features
 
