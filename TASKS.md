@@ -141,10 +141,10 @@ Acceptance:
 
 Codex deliverables:
 
-- [ ] Freeze and export the OpenAPI document.
-- [ ] Provide representative success and error payloads.
-- [ ] Document local API URL, CORS setup, pagination, filters, statuses, and reason-code labels.
-- [ ] Run a frontend-contract smoke check against seeded data.
+- [x] Freeze and export the OpenAPI document.
+- [x] Provide representative success and error payloads.
+- [x] Document local API URL, CORS setup, pagination, filters, statuses, and reason-code labels.
+- [x] Run a frontend-contract smoke check against seeded data.
 
 Antigravity scope:
 
@@ -156,8 +156,8 @@ Antigravity scope:
 
 Acceptance:
 
-- [ ] The handoff contains no frontend implementation from Codex.
-- [ ] Antigravity can build the agreed screens from the API contract alone.
+- [x] The handoff contains no frontend implementation from Codex.
+- [x] Antigravity can build the agreed screens from the API contract alone.
 
 ## Milestone 9 — Deployment and demo verification
 

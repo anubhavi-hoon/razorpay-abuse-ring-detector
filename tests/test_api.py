@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -110,6 +111,12 @@ class ApiTest(unittest.TestCase):
                 self.assertEqual(cors.headers["access-control-allow-origin"], "http://frontend.test")
 
                 schema = client.get("/openapi.json").json()
+                frozen_schema = json.loads(
+                    (Path(__file__).resolve().parents[1] / "docs/openapi.json").read_text(
+                        encoding="utf-8"
+                    )
+                )
+                self.assertEqual(schema, frozen_schema)
                 expected_paths = {
                     "/api/v1/health",
                     "/api/v1/summary",
