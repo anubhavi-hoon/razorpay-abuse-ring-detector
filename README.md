@@ -4,7 +4,7 @@ Buildathon project for detecting coordinated multi-account promotional abuse usi
 
 ## Current status
 
-Relationship-graph ring detection is complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
+The reproducible end-to-end batch pipeline is complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
 
 ## Setup
 
@@ -29,6 +29,14 @@ generate-demo-data --output-dir data/raw
 ```
 
 Defaults produce 2,000 synthetic accounts, 10,000 transactions, and 15 planted abuse rings. Use `--help` to change the seed or dataset size. The `label` and `ring_label` columns are synthetic ground truth reserved for training and evaluation; they must not be used as production features.
+
+## Run the complete pipeline
+
+```bash
+run-abuse-pipeline --run-id demo
+```
+
+The command validates and processes generated data, trains and scores the account model, detects rings, then publishes the completed run under `runs/demo/`. Its `run.json` records configuration, artifact versions, counts, metrics, timings, and output paths. Repeating the same run ID and configuration returns the existing run unchanged; use a new run ID for different inputs. Pass `--model-artifact path/to/model.pkl` to score with a trusted existing model instead of training one.
 
 ## Build account features
 

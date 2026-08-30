@@ -93,16 +93,16 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Add one command that validates, builds features, trains or loads the model, scores accounts, detects rings, and writes outputs.
-- [ ] Record run configuration, artifact version, counts, metrics, and timings.
-- [ ] Make rerunning the same run ID safe and deterministic.
-- [ ] Add one end-to-end test on a small seeded dataset.
+- [x] Add one command that validates, builds features, trains or loads the model, scores accounts, detects rings, and writes outputs.
+- [x] Record run configuration, artifact version, counts, metrics, and timings.
+- [x] Make rerunning the same run ID safe and deterministic.
+- [x] Add one end-to-end test on a small seeded dataset.
 
 Acceptance:
 
-- [ ] The default full run finishes within 60 seconds on a typical laptop.
-- [ ] A failed stage exits non-zero and does not present partial results as complete.
-- [ ] The command and output locations are documented.
+- [x] The default full run finishes within 60 seconds on a typical laptop.
+- [x] A failed stage exits non-zero and does not present partial results as complete.
+- [x] The command and output locations are documented.
 
 ## Milestone 6 — Database persistence
 

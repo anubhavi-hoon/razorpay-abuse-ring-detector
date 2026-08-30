@@ -14,6 +14,7 @@ htmlcov/
 artifacts/
 data/raw/
 data/processed/
+runs/
 *.db
 *.sqlite*
 
@@ -21,4 +22,3 @@ data/processed/
 .DS_Store
 .idea/
 .vscode/
-

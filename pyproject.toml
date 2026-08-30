@@ -13,6 +13,7 @@ dependencies = ["networkx==3.6.1", "scikit-learn==1.9.0"]
 build-account-features = "abuse_detector.features:main"
 detect-abuse-rings = "abuse_detector.graph:main"
 generate-demo-data = "abuse_detector.data:main"
+run-abuse-pipeline = "abuse_detector.pipeline:main"
 train-account-model = "abuse_detector.model:main"
 
 [tool.setuptools.packages.find]

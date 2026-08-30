@@ -193,7 +193,7 @@ def train_and_evaluate(
     output_dir.mkdir(parents=True, exist_ok=True)
     with (output_dir / "model.pkl").open("wb") as file:
         pickle.dump(artifact, file)
-    _write_scores(output_dir / "account_scores.csv", score_rows)
+    write_account_scores(output_dir / "account_scores.csv", score_rows)
     (output_dir / "evaluation.json").write_text(
         json.dumps(evaluation, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -258,7 +258,7 @@ def _read_csv(path: Path, expected_fields: tuple[str, ...]) -> list[dict[str, st
     return rows
 
 
-def _write_scores(path: Path, rows: list[dict[str, object]]) -> None:
+def write_account_scores(path: Path, rows: list[dict[str, object]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as file:
         writer = csv.DictWriter(
             file, fieldnames=("account_id", "ml_score", "predicted_label", "reason_codes")
@@ -289,4 +289,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-
