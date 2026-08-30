@@ -9,9 +9,12 @@ description = "Coordinated promotional abuse detection using lightweight ML and 
 requires-python = ">=3.11"
 dependencies = [
     "alembic==1.19.1",
+    "fastapi==0.141.1",
+    "httpx2==2.12.0",
     "networkx==3.6.1",
     "scikit-learn==1.9.0",
     "SQLAlchemy==2.0.52",
+    "uvicorn==0.46.0",
 ]
 
 [project.optional-dependencies]

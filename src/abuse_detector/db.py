@@ -29,7 +29,7 @@ from sqlalchemy import (
     select,
     text,
 )
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 from .data import load_dataset, parse_utc_timestamp
@@ -203,7 +203,13 @@ class Relationship(Base):
 
 
 def create_database_engine(database_url: str | None = None) -> Engine:
-    engine = create_engine(database_url or os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL))
+    url = database_url or os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+    engine = create_engine(
+        url,
+        connect_args={"check_same_thread": False}
+        if make_url(url).get_backend_name() == "sqlite"
+        else {},
+    )
     if engine.dialect.name == "sqlite":
 
         @event.listens_for(engine, "connect")

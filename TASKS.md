@@ -124,18 +124,18 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Implement the endpoints in `SPEC.md` under `/api/v1`.
-- [ ] Add bounded pagination and documented filters.
-- [ ] Return graph-ready ring detail and stable reason codes.
-- [ ] Validate review-status transitions and missing resources.
-- [ ] Configure CORS from an environment variable.
-- [ ] Test successful responses, filtering, pagination, validation, and status updates.
+- [x] Implement the endpoints in `SPEC.md` under `/api/v1`.
+- [x] Add bounded pagination and documented filters.
+- [x] Return graph-ready ring detail and stable reason codes.
+- [x] Validate review-status transitions and missing resources.
+- [x] Configure CORS from an environment variable.
+- [x] Test successful responses, filtering, pagination, validation, and status updates.
 
 Acceptance:
 
-- [ ] Generated OpenAPI accurately describes every endpoint.
-- [ ] The complete demo flow works against seeded database data.
-- [ ] Antigravity needs no risk logic or data reshaping beyond presentation needs.
+- [x] Generated OpenAPI accurately describes every endpoint.
+- [x] The complete demo flow works against seeded database data.
+- [x] Antigravity needs no risk logic or data reshaping beyond presentation needs.
 
 ## Milestone 8 — Frontend handoff contract
 
