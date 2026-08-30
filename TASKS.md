@@ -59,18 +59,18 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Split data without placing one planted ring in both train and test sets.
-- [ ] Fit a class-weighted logistic-regression pipeline.
-- [ ] Persist the complete fitted pipeline and feature names.
-- [ ] Emit account scores and deterministic reason codes.
-- [ ] Report the account metrics and errors required by `SPEC.md`.
-- [ ] Test artifact reload and identical scoring on a fixed sample.
+- [x] Split data without placing one planted ring in both train and test sets.
+- [x] Fit a class-weighted logistic-regression pipeline.
+- [x] Persist the complete fitted pipeline and feature names.
+- [x] Emit account scores and deterministic reason codes.
+- [x] Report the account metrics and errors required by `SPEC.md`.
+- [x] Test artifact reload and identical scoring on a fixed sample.
 
 Acceptance:
 
-- [ ] Account recall is at least 0.75 and precision at least 0.60 on default data.
-- [ ] Metrics come only from the held-out test set.
-- [ ] If targets fail, adjust synthetic realism/features before adding model complexity.
+- [x] Account recall is at least 0.75 and precision at least 0.60 on default data.
+- [x] Metrics come only from the held-out test set.
+- [x] If targets fail, adjust synthetic realism/features before adding model complexity.
 
 ## Milestone 4 — Relationship graph and ring detection
 
