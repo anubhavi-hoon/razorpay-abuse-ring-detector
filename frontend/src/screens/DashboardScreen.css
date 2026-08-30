@@ -1,0 +1,172 @@
+/* ================================================================== */
+/*  Dashboard screen                                                   */
+/* ================================================================== */
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+.page-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Metrics row                                                        */
+/* ------------------------------------------------------------------ */
+
+.metrics-row {
+  display: flex;
+  gap: var(--sp-8);
+  flex-wrap: wrap;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: var(--sp-1);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Score distribution                                                 */
+/* ------------------------------------------------------------------ */
+
+.score-dist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.score-dist-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.score-dist-label {
+  width: 64px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.score-dist-bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-surface-alt);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.score-dist-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+}
+
+.score-dist-bar--low {
+  background: var(--score-low);
+}
+
+.score-dist-bar--medium {
+  background: var(--score-medium);
+}
+
+.score-dist-bar--high {
+  background: var(--score-high);
+}
+
+.score-dist-count {
+  width: 48px;
+  text-align: right;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Review status                                                      */
+/* ------------------------------------------------------------------ */
+
+.review-status-row {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.review-status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  min-width: 90px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .review-status-item {
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+}
+
+.review-status-item:hover {
+  background: var(--bg-surface-alt);
+  border-color: var(--text-muted);
+  text-decoration: none;
+}
+
+.review-status-count {
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.review-status-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: var(--sp-1);
+}
+
+/* Status-specific colors */
+.review-status-item.status-new .review-status-count {
+  color: var(--status-new);
+}
+.review-status-item.status-new .review-status-label {
+  color: var(--status-new);
+}
+.review-status-item.status-reviewing .review-status-count {
+  color: var(--status-reviewing);
+}
+.review-status-item.status-reviewing .review-status-label {
+  color: var(--status-reviewing);
+}
+.review-status-item.status-confirmed .review-status-count {
+  color: var(--status-confirmed);
+}
+.review-status-item.status-confirmed .review-status-label {
+  color: var(--status-confirmed);
+}
+.review-status-item.status-dismissed .review-status-count {
+  color: var(--status-dismissed);
+}
+.review-status-item.status-dismissed .review-status-label {
+  color: var(--status-dismissed);
+}

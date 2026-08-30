@@ -1,0 +1,215 @@
+/* ================================================================== */
+/*  App shell layout                                                   */
+/* ================================================================== */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Sidebar                                                            */
+/* ------------------------------------------------------------------ */
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.sidebar-title {
+  padding: var(--sp-6) var(--sp-5);
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-title-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-3) 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: var(--sp-2) var(--sp-5);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-alt);
+  text-decoration: none;
+}
+
+.sidebar-link--active {
+  color: var(--accent-blue);
+  border-left-color: var(--accent-blue);
+  background: var(--accent-blue-light);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Hamburger (hidden on desktop)                                      */
+/* ------------------------------------------------------------------ */
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: var(--sp-3);
+  left: var(--sp-3);
+  z-index: 200;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.hamburger span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 1px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main area                                                          */
+/* ------------------------------------------------------------------ */
+
+.main-area {
+  flex: 1;
+  margin-left: 220px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  padding: var(--sp-3) var(--sp-6);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+
+.content {
+  flex: 1;
+  padding: var(--sp-6);
+  max-width: 1200px;
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Breadcrumbs                                                        */
+/* ------------------------------------------------------------------ */
+
+.breadcrumbs {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.breadcrumb-sep {
+  margin: 0 var(--sp-2);
+  color: var(--text-muted);
+}
+
+.breadcrumb-current {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Toast notifications                                                */
+/* ------------------------------------------------------------------ */
+
+.toast-container {
+  position: fixed;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  max-width: 400px;
+}
+
+.toast {
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+}
+
+.toast--success {
+  background: hsl(145, 70%, 94%);
+  color: hsl(145, 70%, 25%);
+  border: 1px solid hsl(145, 50%, 75%);
+}
+
+.toast--error {
+  background: hsl(0, 60%, 97%);
+  color: hsl(0, 70%, 35%);
+  border: 1px solid hsl(0, 50%, 80%);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive: collapse sidebar below 768px                           */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sidebar {
+      transition: transform 200ms ease;
+    }
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 90;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .main-area {
+    margin-left: 0;
+  }
+
+  .content {
+    padding: var(--sp-4);
+  }
+}

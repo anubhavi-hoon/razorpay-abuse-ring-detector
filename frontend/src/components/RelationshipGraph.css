@@ -1,0 +1,76 @@
+/* ================================================================== */
+/*  Relationship graph                                                 */
+/* ================================================================== */
+
+.relationship-graph-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.relationship-graph {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Column labels */
+.graph-col-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Node labels */
+.graph-node-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  fill: var(--text-primary);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.graph-entity-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.graph-node-type-label {
+  font-family: var(--font-sans);
+  font-size: 7px;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Edge labels */
+.graph-edge-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Focus / hover states for account nodes */
+.graph-node--account:focus {
+  outline: none;
+}
+
+.graph-node--account:focus circle,
+.graph-node--account:hover circle {
+  stroke-width: 2.5;
+  stroke: hsl(215, 65%, 38%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .graph-node--account circle {
+    transition: stroke-width 150ms ease, stroke 150ms ease;
+  }
+}
