@@ -108,17 +108,17 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Add SQLAlchemy models for source records, detection runs, account results, rings, memberships, relationships, and review status.
-- [ ] Add the initial Alembic migration.
-- [ ] Load one pipeline run transactionally with upsert/replace semantics.
-- [ ] Support SQLite by default and PostgreSQL through `DATABASE_URL`.
-- [ ] Test constraints, rollback behavior, relationships, and idempotent reload.
+- [x] Add SQLAlchemy models for source records, detection runs, account results, rings, memberships, relationships, and review status.
+- [x] Add the initial Alembic migration.
+- [x] Load one pipeline run transactionally with upsert/replace semantics.
+- [x] Support SQLite by default and PostgreSQL through `DATABASE_URL`.
+- [x] Test constraints, rollback behavior, relationships, and idempotent reload.
 
 Acceptance:
 
-- [ ] Repeating a load creates no duplicate logical records.
-- [ ] Invalid foreign keys and statuses are rejected.
-- [ ] SQLite tests pass without an external service.
+- [x] Repeating a load creates no duplicate logical records.
+- [x] Invalid foreign keys and statuses are rejected.
+- [x] SQLite tests pass without an external service.
 
 ## Milestone 7 — REST API
 

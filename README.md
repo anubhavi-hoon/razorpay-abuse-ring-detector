@@ -62,4 +62,15 @@ detect-abuse-rings --accounts data/raw/accounts.csv --transactions data/raw/tran
 
 The command suppresses overly common entities, finds non-singleton connected components, and writes ranked rings, memberships, graph nodes/edges, and ring evaluation. The normalized ring score weights mean/max ML score (35%/15%), shared-entity strength (15%), account-link density (10%), promotion concentration (10%), and signup-time concentration (15%); it is a ranking score, not a probability. Override a noise limit with `--max-entity-accounts TYPE=COUNT`.
 
+## Load a run into the database
+
+SQLite is the default:
+
+```bash
+alembic upgrade head
+load-detection-run runs/demo
+```
+
+The loader transactionally replaces the same run ID without duplicates and preserves existing ring review statuses. Set `DATABASE_URL` for another database. PostgreSQL uses a `postgresql+psycopg://...` URL and the optional driver installed with `python -m pip install -e '.[postgres]'`.
+
 See [`SPEC.md`](SPEC.md) for the product contract and [`ARCHITECTURE.md`](ARCHITECTURE.md) for technical decisions.

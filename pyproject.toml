@@ -7,12 +7,21 @@ name = "razorpay-abuse-ring-detector"
 version = "0.1.0"
 description = "Coordinated promotional abuse detection using lightweight ML and graph analysis."
 requires-python = ">=3.11"
-dependencies = ["networkx==3.6.1", "scikit-learn==1.9.0"]
+dependencies = [
+    "alembic==1.19.1",
+    "networkx==3.6.1",
+    "scikit-learn==1.9.0",
+    "SQLAlchemy==2.0.52",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]==3.3.4"]
 
 [project.scripts]
 build-account-features = "abuse_detector.features:main"
 detect-abuse-rings = "abuse_detector.graph:main"
 generate-demo-data = "abuse_detector.data:main"
+load-detection-run = "abuse_detector.db:main"
 run-abuse-pipeline = "abuse_detector.pipeline:main"
 train-account-model = "abuse_detector.model:main"
 
