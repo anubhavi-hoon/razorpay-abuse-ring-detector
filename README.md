@@ -4,7 +4,7 @@ Buildathon project for detecting coordinated multi-account promotional abuse usi
 
 ## Current status
 
-The account-level ML baseline and evaluation are complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
+Relationship-graph ring detection is complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
 
 ## Setup
 
@@ -45,5 +45,13 @@ train-account-model --features data/processed/account_features.csv --labels data
 ```
 
 The command keeps each planted ring entirely in train or test data, fits a class-weighted logistic-regression pipeline, and writes `model.pkl`, `account_scores.csv`, and held-out `evaluation.json`. Only load model artifacts produced by this project.
+
+## Detect abuse rings
+
+```bash
+detect-abuse-rings --accounts data/raw/accounts.csv --transactions data/raw/transactions.csv --scores artifacts/account_scores.csv --output-dir data/processed/rings
+```
+
+The command suppresses overly common entities, finds non-singleton connected components, and writes ranked rings, memberships, graph nodes/edges, and ring evaluation. The normalized ring score weights mean/max ML score (35%/15%), shared-entity strength (15%), account-link density (10%), promotion concentration (10%), and signup-time concentration (15%); it is a ranking score, not a probability. Override a noise limit with `--max-entity-accounts TYPE=COUNT`.
 
 See [`SPEC.md`](SPEC.md) for the product contract and [`ARCHITECTURE.md`](ARCHITECTURE.md) for technical decisions.

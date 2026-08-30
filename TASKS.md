@@ -76,18 +76,18 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Build account/entity relationships from configured entity types.
-- [ ] Suppress or down-weight overly common entities.
-- [ ] Find non-singleton connected components with NetworkX.
-- [ ] Compute component metrics, ring scores, and reason codes.
-- [ ] Export ring, membership, node, and edge records.
-- [ ] Test shared-entity linking, noisy-entity filtering, component membership, and score bounds.
+- [x] Build account/entity relationships from configured entity types.
+- [x] Suppress or down-weight overly common entities.
+- [x] Find non-singleton connected components with NetworkX.
+- [x] Compute component metrics, ring scores, and reason codes.
+- [x] Export ring, membership, node, and edge records.
+- [x] Test shared-entity linking, noisy-entity filtering, component membership, and score bounds.
 
 Acceptance:
 
-- [ ] At least 80% of planted rings appear in the top 20 for default data.
-- [ ] Every surfaced ring has inspectable evidence.
-- [ ] Common merchants or IPs do not collapse most accounts into one component.
+- [x] At least 80% of planted rings appear in the top 20 for default data.
+- [x] Every surfaced ring has inspectable evidence.
+- [x] Common merchants or IPs do not collapse most accounts into one component.
 
 ## Milestone 5 — End-to-end batch pipeline
 
