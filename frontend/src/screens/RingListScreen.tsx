@@ -2,7 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { fetchRings, ApiError } from '../api';
 import type { RingPage, ReviewStatus, RingFilterParams } from '../types';
-import { formatScore, formatDate, getReasonLabel } from '../constants';
+import {
+  formatScore,
+  formatDate,
+  getReasonSentence,
+  getRiskLevel,
+} from '../constants';
 import './RingListScreen.css';
 
 interface FilterState {
@@ -24,13 +29,16 @@ const EMPTY_FILTERS: FilterState = {
 export default function RingListScreen() {
   const [searchParams] = useSearchParams();
   const initialStatus = searchParams.get('status') ?? '';
+  const initialMinScorePct = searchParams.get('min_score') ?? '';
 
   const [filters, setFilters] = useState<FilterState>({
     ...EMPTY_FILTERS,
+    minScorePct: initialMinScorePct,
     status: initialStatus,
   });
   const [appliedFilters, setAppliedFilters] = useState<FilterState>({
     ...EMPTY_FILTERS,
+    minScorePct: initialMinScorePct,
     status: initialStatus,
   });
   const [page, setPage] = useState(1);
@@ -183,13 +191,13 @@ export default function RingListScreen() {
           <table className="ring-table">
             <thead>
               <tr>
-                <th>Score</th>
+                <th>Risk</th>
                 <th>Status</th>
                 <th>Ring ID</th>
                 <th>Members</th>
                 <th>Shared</th>
                 <th>Entity Types</th>
-                <th>Reason Codes</th>
+                <th>Why this was flagged</th>
                 <th>Created</th>
               </tr>
             </thead>
@@ -251,13 +259,13 @@ export default function RingListScreen() {
             <table className="ring-table">
               <thead>
                 <tr>
-                  <th>Score</th>
+                  <th>Risk</th>
                   <th>Status</th>
                   <th>Ring ID</th>
                   <th>Members</th>
                   <th>Shared</th>
                   <th>Entity Types</th>
-                  <th>Reason Codes</th>
+                  <th>Why this was flagged</th>
                   <th>Created</th>
                 </tr>
               </thead>
@@ -270,27 +278,35 @@ export default function RingListScreen() {
                         ? 'var(--score-medium)'
                         : 'var(--score-low)';
 
-                  const reasonLabels = ring.reason_codes.map(getReasonLabel);
+                  const reasonSentences = ring.reason_codes.map(getReasonSentence);
                   const maxReasons = 3;
-                  const shown = reasonLabels.slice(0, maxReasons);
-                  const overflow = reasonLabels.length - maxReasons;
+                  const shown = reasonSentences.slice(0, maxReasons);
+                  const overflow = reasonSentences.length - maxReasons;
 
                   return (
                     <tr key={ring.ring_id}>
                       <td>
-                        <div className="score-bar">
-                          <div className="score-bar-fill">
-                            <div
-                              className="score-bar-fill-inner"
-                              style={{
-                                width: `${ring.score * 100}%`,
-                                background: scoreColor,
-                              }}
-                            />
-                          </div>
-                          <span className="mono" style={{ fontSize: '0.8rem' }}>
-                            {formatScore(ring.score)}
+                        <div className="risk-score">
+                          <span
+                            className="risk-score-label"
+                            style={{ color: scoreColor }}
+                          >
+                            {getRiskLevel(ring.score)}
                           </span>
+                          <div className="score-bar">
+                            <div className="score-bar-fill">
+                              <div
+                                className="score-bar-fill-inner"
+                                style={{
+                                  width: `${ring.score * 100}%`,
+                                  background: scoreColor,
+                                }}
+                              />
+                            </div>
+                            <span className="risk-score-exact mono">
+                              {formatScore(ring.score)}
+                            </span>
+                          </div>
                         </div>
                       </td>
                       <td>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchAccountDetail, ApiError } from '../api';
 import type { AccountDetail } from '../types';
-import { formatScore, formatDateTime, getReasonLabel } from '../constants';
+import { formatScore, formatDateTime, getReasonSentence } from '../constants';
 import './AccountDetailScreen.css';
 
 export default function AccountDetailScreen() {
@@ -203,7 +203,7 @@ export default function AccountDetailScreen() {
         <div className="reason-pills">
           {data.reason_codes.map((code) => (
             <span key={code} className="reason-pill">
-              {getReasonLabel(code)}
+              {getReasonSentence(code)}
             </span>
           ))}
         </div>

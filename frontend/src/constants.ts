@@ -19,6 +19,22 @@ export const REASON_CODE_LABELS: Record<string, string> = {
   EARLY_PROMOTION_USE: 'Promotion used soon after signup',
 };
 
+/** Plain-language explanations for reason codes. */
+export const REASON_CODE_SENTENCES: Record<string, string> = {
+  HIGH_MEAN_ML_SCORE: 'These accounts have a high average risk score.',
+  MULTIPLE_SHARED_ENTITIES: 'These accounts share multiple identifiers or relationships.',
+  DENSE_ACCOUNT_LINKS: 'These accounts form a dense relationship network.',
+  CONCENTRATED_PROMOTIONS: 'These accounts concentrated their activity on the same promotions.',
+  CLUSTERED_ACCOUNT_CREATION: 'These accounts were created within a short time window.',
+  SHARED_PAYMENT_INSTRUMENT: 'These accounts reused the same payment method.',
+  SHARED_DEVICE: 'These accounts reused the same device.',
+  RAPID_PROMO_CLAIMS: 'These accounts claimed promotions repeatedly within a short period.',
+  HIGH_PROMOTION_RATIO: 'A high share of their transactions used promotions.',
+  HIGH_FAILURE_RATIO: 'A high share of their transactions failed.',
+  HIGH_REFUND_RATIO: 'A high share of their transactions were refunded.',
+  EARLY_PROMOTION_USE: 'Promotions were used soon after account creation.',
+};
+
 /** Returns the human label for a reason code, falling back to title case. */
 export function getReasonLabel(code: string): string {
   if (code in REASON_CODE_LABELS) {
@@ -29,6 +45,11 @@ export function getReasonLabel(code: string): string {
     .toLowerCase()
     .replace(/_/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** Returns a sentence explanation, with a readable fallback for unknown codes. */
+export function getReasonSentence(code: string): string {
+  return REASON_CODE_SENTENCES[code] ?? `${getReasonLabel(code)}.`;
 }
 
 /**
@@ -73,6 +94,13 @@ export const SCORE_BUCKETS = {
   medium: { min: 0.5, max: 0.8, label: 'Medium' },
   high: { min: 0.8, label: 'High' },
 } as const;
+
+/** Return the user-facing risk band for a 0–1 score. */
+export function getRiskLevel(score: number): string {
+  if (score >= SCORE_BUCKETS.high.min) return 'High risk';
+  if (score >= SCORE_BUCKETS.medium.min) return 'Medium risk';
+  return 'Low risk';
+}
 
 /** Format a 0–1 score as a percentage string. */
 export function formatScore(score: number): string {

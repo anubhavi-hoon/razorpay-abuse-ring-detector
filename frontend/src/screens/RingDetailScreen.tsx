@@ -5,7 +5,8 @@ import type { RingDetail, ReviewStatus } from '../types';
 import {
   formatScore,
   formatDate,
-  getReasonLabel,
+  getReasonSentence,
+  getRiskLevel,
   REVIEW_TRANSITIONS,
   getTransitionLabel,
 } from '../constants';
@@ -131,7 +132,7 @@ export default function RingDetailScreen() {
                 <tr>
                   <th>Account ID</th>
                   <th>ML Score</th>
-                  <th>Reason Codes</th>
+                  <th>Why this was flagged</th>
                 </tr>
               </thead>
               <tbody>
@@ -194,17 +195,27 @@ export default function RingDetailScreen() {
           <div>
             <h1 className="page-title mono">{data.ring_id}</h1>
             <div className="ring-detail-meta">
-              <div className="score-bar">
-                <div className="score-bar-fill">
-                  <div
-                    className="score-bar-fill-inner"
-                    style={{
-                      width: `${data.score * 100}%`,
-                      background: scoreColor,
-                    }}
-                  />
+              <div className="risk-score">
+                <span
+                  className="risk-score-label"
+                  style={{ color: scoreColor }}
+                >
+                  {getRiskLevel(data.score)}
+                </span>
+                <div className="score-bar">
+                  <div className="score-bar-fill">
+                    <div
+                      className="score-bar-fill-inner"
+                      style={{
+                        width: `${data.score * 100}%`,
+                        background: scoreColor,
+                      }}
+                    />
+                  </div>
+                  <span className="risk-score-exact mono">
+                    {formatScore(data.score)}
+                  </span>
                 </div>
-                <span className="mono">{formatScore(data.score)}</span>
               </div>
               <span className={`status-badge status-${data.status}`}>
                 {data.status}
@@ -280,11 +291,11 @@ export default function RingDetailScreen() {
 
       {/* Reason codes */}
       <div className="panel">
-        <div className="panel-header">Reason Codes</div>
+        <div className="panel-header">Why this was flagged</div>
         <div className="reason-pills">
           {data.reason_codes.map((code) => (
             <span key={code} className="reason-pill">
-              {getReasonLabel(code)}
+              {getReasonSentence(code)}
             </span>
           ))}
         </div>
@@ -305,7 +316,7 @@ export default function RingDetailScreen() {
               <tr>
                 <th>Account ID</th>
                 <th>ML Score</th>
-                <th>Reason Codes</th>
+                <th>Why this was flagged</th>
               </tr>
             </thead>
             <tbody>
@@ -321,7 +332,7 @@ export default function RingDetailScreen() {
                     <div className="reason-pills">
                       {m.reason_codes.map((code) => (
                         <span key={code} className="reason-pill">
-                          {getReasonLabel(code)}
+                          {getReasonSentence(code)}
                         </span>
                       ))}
                     </div>

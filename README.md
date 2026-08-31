@@ -30,6 +30,10 @@ generate-demo-data --output-dir data/raw
 
 Defaults produce 2,000 synthetic accounts, 10,000 transactions, and 15 planted abuse rings. Use `--help` to change the seed or dataset size. The `label` and `ring_label` columns are synthetic ground truth reserved for training and evaluation; they must not be used as production features.
 
+The current `email_hash` and `phone_hash` values are synthetic identifiers derived deterministically from `(kind, seed, index)` via SHA-256. They are not anonymized or hashed real personal data because no real personal data enters this system.
+
+A future real-data version would require HMAC-SHA256 instead of plain SHA-256, a secret server-side pepper instead of the public run seed, and key versioning for pepper rotation. Pseudonymization is not the same as anonymization; these are future requirements and are not implemented now.
+
 ## Run the complete pipeline
 
 ```bash

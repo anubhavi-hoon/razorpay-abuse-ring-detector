@@ -1,21 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchSummary, ApiError } from '../api';
+import { fetchRings, fetchSummary, ApiError } from '../api';
 import type { SummaryResponse, ReviewStatus } from '../types';
+import { SCORE_BUCKETS } from '../constants';
 import './DashboardScreen.css';
 
 export default function DashboardScreen() {
   const [data, setData] = useState<SummaryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [highRiskNewCount, setHighRiskNewCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    fetchSummary()
-      .then((d) => {
-        if (!cancelled) setData(d);
+    Promise.all([
+      fetchSummary(),
+      fetchRings({
+        page: 1,
+        page_size: 1,
+        min_score: SCORE_BUCKETS.high.min,
+        status: 'new',
+      }),
+    ])
+      .then(([summary, highRiskNew]) => {
+        if (!cancelled) {
+          setData(summary);
+          setHighRiskNewCount(highRiskNew.total);
+        }
       })
       .catch((e) => {
         if (!cancelled) setError(e instanceof ApiError ? e.message : String(e));
@@ -118,6 +131,19 @@ export default function DashboardScreen() {
   return (
     <div className="dashboard">
       <h1 className="page-title">Dashboard</h1>
+
+      <Link
+        to={`/rings?min_score=${SCORE_BUCKETS.high.min * 100}&status=new`}
+        className="high-risk-callout"
+      >
+        <span className="high-risk-callout-message">
+          <strong className="mono">{highRiskNewCount.toLocaleString()}</strong>{' '}
+          high-risk cases need attention
+        </span>
+        <span className="high-risk-callout-action">
+          Review high-risk new cases <span aria-hidden="true">→</span>
+        </span>
+      </Link>
 
       {/* Summary metrics */}
       <div className="panel dashboard-metrics">

@@ -249,6 +249,24 @@ button:disabled {
 /*  Score indicator                                                     */
 /* ================================================================== */
 
+.risk-score {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+}
+
+.risk-score-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.risk-score-exact {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
 .score-bar {
   display: inline-flex;
   align-items: center;

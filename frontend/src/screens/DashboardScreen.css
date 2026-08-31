@@ -14,6 +14,50 @@
   margin: 0;
 }
 
+.high-risk-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding: var(--sp-4) var(--sp-5);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--score-high);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+}
+
+.high-risk-callout:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-alt);
+  text-decoration: none;
+}
+
+.high-risk-callout-message {
+  font-weight: 500;
+}
+
+.high-risk-callout-message strong {
+  color: var(--score-high);
+  font-size: 1.15rem;
+}
+
+.high-risk-callout-action {
+  flex-shrink: 0;
+  color: var(--accent-blue);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .high-risk-callout {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* ------------------------------------------------------------------ */
 /*  Metrics row                                                        */
 /* ------------------------------------------------------------------ */

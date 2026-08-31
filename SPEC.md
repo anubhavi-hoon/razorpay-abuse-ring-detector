@@ -65,13 +65,17 @@ Use stable string IDs and UTC ISO-8601 timestamps.
 |---|---|---|
 | `account_id` | string | unique |
 | `created_at` | timestamp | UTC |
-| `email_hash` | string | synthetic/hash-like value |
-| `phone_hash` | string | synthetic/hash-like value |
+| `email_hash` | string | synthetic identifier derived deterministically from `(kind, seed, index)` via SHA-256 |
+| `phone_hash` | string | synthetic identifier derived deterministically from `(kind, seed, index)` via SHA-256 |
 | `device_id` | string | may be shared |
 | `ip_address` | string | synthetic address |
 | `payment_instrument_id` | string | may be shared |
 | `label` | integer | `1` abuse, `0` legitimate; training/evaluation only |
 | `ring_label` | string/null | synthetic ground truth; evaluation only |
+
+The current `email_hash` and `phone_hash` values are synthetic identifiers, not anonymized or hashed real personal data. They are generated deterministically from `(kind, seed, index)` using SHA-256, and no real personal data enters this system.
+
+A future real-data version would require HMAC-SHA256 rather than plain SHA-256, a secret server-side pepper rather than the public run seed, and key versioning to support pepper rotation. Pseudonymization is not the same as anonymization. These are stated future requirements and are not implemented now.
 
 ### `transactions.csv`
 
