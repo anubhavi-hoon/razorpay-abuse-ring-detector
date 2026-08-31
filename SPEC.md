@@ -29,7 +29,7 @@ The product must let the analyst:
 4. filter cases by score, promotion, status, and date;
 5. mark a case as `new`, `reviewing`, `confirmed`, or `dismissed`.
 
-Frontend implementation belongs to Antigravity. Codex owns the data pipeline, detection logic, database, API contract, tests, and deployment setup.
+Antigravity built the initial frontend; Codex also made scoped changes for the dashboard high-risk entry point and risk-level display. Codex owns the data pipeline, detection logic, database, API contract, tests, and deployment setup.
 
 ## 4. MVP boundaries
 
