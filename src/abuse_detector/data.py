@@ -33,6 +33,9 @@ TRANSACTION_FIELDS = (
     "status",
 )
 GROUND_TRUTH_FIELDS = ("label", "ring_label")
+# Uploaded test data often has no ground truth, so the two trailing label columns
+# are optional. Absent or blank label means "unavailable", never "not abusive".
+REQUIRED_ACCOUNT_FIELDS = ACCOUNT_FIELDS[: -len(GROUND_TRUTH_FIELDS)]
 ANCHOR = datetime(2026, 1, 1, tzinfo=timezone.utc)
 RING_SIZE = 5
 
@@ -46,7 +49,7 @@ class Account:
     device_id: str
     ip_address: str
     payment_instrument_id: str
-    label: int
+    label: int | None
     ring_label: str
 
 
@@ -77,7 +80,9 @@ def parse_utc_timestamp(value: str, location: str = "timestamp") -> datetime:
 
 def load_dataset(accounts_path: Path, transactions_path: Path) -> tuple[list[Account], list[Transaction]]:
     """Load and validate the complete source CSV contract."""
-    account_rows = _read_rows(accounts_path, ACCOUNT_FIELDS)
+    account_rows = _read_rows(
+        accounts_path, ACCOUNT_FIELDS, optional_trailing=len(GROUND_TRUTH_FIELDS)
+    )
     transaction_rows = _read_rows(transactions_path, TRANSACTION_FIELDS)
 
     accounts: list[Account] = []
@@ -85,11 +90,12 @@ def load_dataset(accounts_path: Path, transactions_path: Path) -> tuple[list[Acc
     account_created: dict[str, datetime] = {}
     for row_number, row in enumerate(account_rows, start=2):
         location = f"{accounts_path}:{row_number}"
-        _require_values(row, ACCOUNT_FIELDS[:-1], location)
+        _require_values(row, REQUIRED_ACCOUNT_FIELDS, location)
         if row["account_id"] in account_ids:
             raise DataValidationError(f"{location}: duplicate account_id {row['account_id']!r}")
-        if row["label"] not in {"0", "1"}:
-            raise DataValidationError(f"{location}: label must be 0 or 1")
+        raw_label = (row.get("label") or "").strip()
+        if raw_label not in {"", "0", "1"}:
+            raise DataValidationError(f"{location}: label must be 0, 1, or empty")
         created = parse_utc_timestamp(row["created_at"], f"{location} created_at")
         account = Account(
             account_id=row["account_id"],
@@ -99,8 +105,8 @@ def load_dataset(accounts_path: Path, transactions_path: Path) -> tuple[list[Acc
             device_id=row["device_id"],
             ip_address=row["ip_address"],
             payment_instrument_id=row["payment_instrument_id"],
-            label=int(row["label"]),
-            ring_label=row["ring_label"],
+            label=int(raw_label) if raw_label else None,
+            ring_label=row.get("ring_label") or "",
         )
         accounts.append(account)
         account_ids.add(account.account_id)
@@ -134,11 +140,17 @@ def load_dataset(accounts_path: Path, transactions_path: Path) -> tuple[list[Acc
     return accounts, transactions
 
 
-def _read_rows(path: Path, expected_fields: tuple[str, ...]) -> list[dict[str, str]]:
+def _read_rows(
+    path: Path, expected_fields: tuple[str, ...], optional_trailing: int = 0
+) -> list[dict[str, str]]:
+    accepted = {
+        expected_fields[: len(expected_fields) - dropped]
+        for dropped in range(optional_trailing + 1)
+    }
     try:
         with path.open(encoding="utf-8", newline="") as file:
             reader = csv.DictReader(file)
-            if tuple(reader.fieldnames or ()) != expected_fields:
+            if tuple(reader.fieldnames or ()) not in accepted:
                 raise DataValidationError(
                     f"{path}: expected columns {expected_fields}, got {tuple(reader.fieldnames or ())}"
                 )

@@ -247,11 +247,15 @@ def evaluate_rings(
         max((_jaccard(expected, detected) for expected in planted.values()), default=0.0) >= 0.5
         for detected in top_sets
     )
+    # No ring labels means no ground truth, so recall/precision are unavailable.
+    # Reporting 0.0 would read as "the detector missed everything" instead.
     return {
         "planted_ring_count": len(planted),
         "detected_ring_count": len(rings),
-        "top20_ring_recall": round(len(surfaced) / len(planted), 6) if planted else 0.0,
-        "top20_ring_precision": round(matched_detections / len(top_sets), 6) if top_sets else 0.0,
+        "top20_ring_recall": round(len(surfaced) / len(planted), 6) if planted else None,
+        "top20_ring_precision": (
+            round(matched_detections / len(top_sets), 6) if planted and top_sets else None
+        ),
         "surfaced_planted_rings": surfaced,
     }
 

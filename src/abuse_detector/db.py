@@ -63,7 +63,9 @@ class DetectionRun(Base):
 
 class Account(Base):
     __tablename__ = "accounts"
-    __table_args__ = (CheckConstraint("label IN (0, 1)", name="ck_accounts_label"),)
+    __table_args__ = (
+        CheckConstraint("label IS NULL OR label IN (0, 1)", name="ck_accounts_label"),
+    )
 
     run_id: Mapped[str] = mapped_column(
         String(64), ForeignKey("detection_runs.run_id", ondelete="CASCADE"), primary_key=True
@@ -75,7 +77,7 @@ class Account(Base):
     device_id: Mapped[str] = mapped_column(String(128))
     ip_address: Mapped[str] = mapped_column(String(45))
     payment_instrument_id: Mapped[str] = mapped_column(String(128))
-    label: Mapped[int] = mapped_column(Integer)
+    label: Mapped[int | None] = mapped_column(Integer)
     ring_label: Mapped[str | None] = mapped_column(String(64))
 
 

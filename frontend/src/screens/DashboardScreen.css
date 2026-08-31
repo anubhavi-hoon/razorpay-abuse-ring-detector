@@ -214,3 +214,66 @@
 .review-status-item.status-dismissed .review-status-label {
   color: var(--status-dismissed);
 }
+
+/* ------------------------------------------------------------------ */
+/*  Analyze test data (Buildathon upload)                              */
+/* ------------------------------------------------------------------ */
+
+.analyze-warning {
+  border-left: 3px solid var(--score-high);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0 0 12px;
+  padding: 6px 0 6px 10px;
+}
+
+.analyze-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.analyze-field {
+  display: flex;
+  flex: 1 1 220px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.analyze-field input[type='file'] {
+  max-width: 100%;
+}
+
+.analyze-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.analyze-templates {
+  font-size: 0.8125rem;
+}
+
+.analyze-hint {
+  font-size: 0.8125rem;
+  margin: 10px 0 0;
+}
+
+.analyze-error {
+  color: var(--score-high);
+  font-size: 0.875rem;
+  margin: 10px 0 0;
+}
+
+@media (max-width: 600px) {
+  .analyze-fields {
+    flex-direction: column;
+  }
+
+  .analyze-actions .btn {
+    width: 100%;
+  }
+}

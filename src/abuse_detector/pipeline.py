@@ -12,7 +12,7 @@ import time
 from pathlib import Path
 
 from . import __version__
-from .data import generate_dataset
+from .data import GROUND_TRUTH_FIELDS, generate_dataset, load_dataset
 from .features import write_feature_outputs
 from .graph import write_ring_outputs
 from .model import (
@@ -38,20 +38,29 @@ def run_pipeline(
     test_size: float = 0.25,
     threshold: float = 0.5,
     model_artifact: Path | None = None,
+    source_dir: Path | None = None,
 ) -> dict[str, object]:
-    """Create one atomic, reproducible pipeline run or return its completed result."""
+    """Create one atomic, reproducible pipeline run or return its completed result.
+
+    ``source_dir`` supplies accounts.csv/transactions.csv instead of generating
+    them; its data may have no labels, so no model is trained from it.
+    """
     if not RUN_ID_PATTERN.fullmatch(run_id):
         raise ValueError("run_id must contain 1-64 letters, numbers, underscores, or hyphens")
+    if source_dir is not None and model_artifact is None:
+        raise ValueError("supplied source data requires an existing model_artifact")
+    generated = source_dir is None
     external_artifact = load_artifact(model_artifact) if model_artifact else None
     model_hash = hashlib.sha256(model_artifact.read_bytes()).hexdigest() if model_artifact else None
     config = {
-        "seed": seed,
-        "account_count": account_count,
-        "transaction_count": transaction_count,
-        "ring_count": ring_count,
+        "seed": seed if generated else None,
+        "account_count": account_count if generated else None,
+        "transaction_count": transaction_count if generated else None,
+        "ring_count": ring_count if generated else None,
         "test_size": test_size if external_artifact is None else None,
         "threshold": threshold if external_artifact is None else external_artifact["threshold"],
         "model_source": "trained" if model_artifact is None else f"sha256:{model_hash}",
+        "source": "synthetic" if generated else "upload",
     }
     destination = output_root / run_id
     if destination.exists():
@@ -68,13 +77,16 @@ def run_pipeline(
         rings = workspace / "rings"
 
         stage_started = time.perf_counter()
-        source_manifest = generate_dataset(
-            raw,
-            seed=seed,
-            account_count=account_count,
-            transaction_count=transaction_count,
-            ring_count=ring_count,
-        )
+        if generated:
+            source_manifest = generate_dataset(
+                raw,
+                seed=seed,
+                account_count=account_count,
+                transaction_count=transaction_count,
+                ring_count=ring_count,
+            )
+        else:
+            source_manifest = _copy_source_dataset(source_dir, raw)
         timings["generate"] = _elapsed(stage_started)
 
         stage_started = time.perf_counter()
@@ -164,6 +176,28 @@ def run_pipeline(
         )
         workspace.replace(destination)
     return report
+
+
+def _copy_source_dataset(source_dir: Path, raw: Path) -> dict[str, object]:
+    """Validate supplied CSVs, copy them into the run, and describe what they hold."""
+    raw.mkdir(parents=True)
+    for name in ("accounts.csv", "transactions.csv"):
+        shutil.copyfile(source_dir / name, raw / name)
+    accounts, transactions = load_dataset(raw / "accounts.csv", raw / "transactions.csv")
+    labelled = [account for account in accounts if account.label is not None]
+    manifest: dict[str, object] = {
+        "schema_version": 1,
+        "seed": None,
+        "account_count": len(accounts),
+        "transaction_count": len(transactions),
+        "ring_count": len({account.ring_label for account in accounts if account.ring_label}),
+        "ring_size": None,
+        "ground_truth_fields": list(GROUND_TRUTH_FIELDS) if labelled else [],
+    }
+    (raw / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return manifest
 
 
 def _load_completed_run(destination: Path, config: dict[str, object]) -> dict[str, object]:

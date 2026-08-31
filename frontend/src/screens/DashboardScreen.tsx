@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchRings, fetchSummary, ApiError } from '../api';
+import { analyzeUpload, fetchRings, fetchSummary, ApiError } from '../api';
 import type { SummaryResponse, ReviewStatus } from '../types';
 import { SCORE_BUCKETS } from '../constants';
+import { useToast } from '../components/toastContext';
 import './DashboardScreen.css';
+
+const ACCOUNTS_TEMPLATE =
+  'account_id,created_at,email_hash,phone_hash,device_id,ip_address,payment_instrument_id\n';
+const TRANSACTIONS_TEMPLATE =
+  'transaction_id,account_id,merchant_id,promotion_id,amount,created_at,status\n';
+
+function templateHref(csv: string) {
+  return `data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;
+}
 
 export default function DashboardScreen() {
   const [data, setData] = useState<SummaryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [highRiskNewCount, setHighRiskNewCount] = useState(0);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [accountsFile, setAccountsFile] = useState<File | null>(null);
+  const [transactionsFile, setTransactionsFile] = useState<File | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const { addToast } = useToast();
 
   useEffect(() => {
     let cancelled = false;
@@ -39,7 +55,87 @@ export default function DashboardScreen() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadKey]);
+
+  async function handleAnalyze() {
+    if (!accountsFile || !transactionsFile) return;
+    setAnalyzing(true);
+    setAnalyzeError(null);
+    try {
+      const result = await analyzeUpload(accountsFile, transactionsFile);
+      addToast(
+        `Analyzed ${result.account_count.toLocaleString()} accounts, found ${result.ring_count.toLocaleString()} rings`,
+        'success',
+      );
+      setReloadKey((key) => key + 1);
+    } catch (e) {
+      setAnalyzeError(e instanceof ApiError ? e.message : String(e));
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
+  const uploadPanel = (
+    <div className="panel analyze-panel">
+      <div className="panel-header">Analyze Test Data</div>
+      <p className="analyze-warning" role="note">
+        Use synthetic or pre-hashed test data only. Do not upload real personal
+        information.
+      </p>
+      <div className="analyze-fields">
+        <div className="analyze-field">
+          <label htmlFor="analyze-accounts">Accounts CSV</label>
+          <input
+            id="analyze-accounts"
+            type="file"
+            accept=".csv,text/csv"
+            disabled={analyzing}
+            onChange={(e) => setAccountsFile(e.target.files?.[0] ?? null)}
+          />
+        </div>
+        <div className="analyze-field">
+          <label htmlFor="analyze-transactions">Transactions CSV</label>
+          <input
+            id="analyze-transactions"
+            type="file"
+            accept=".csv,text/csv"
+            disabled={analyzing}
+            onChange={(e) => setTransactionsFile(e.target.files?.[0] ?? null)}
+          />
+        </div>
+      </div>
+      <div className="analyze-actions">
+        <button
+          className="btn btn-primary"
+          disabled={analyzing || !accountsFile || !transactionsFile}
+          onClick={handleAnalyze}
+        >
+          {analyzing ? 'Analyzing…' : 'Analyze'}
+        </button>
+        <span className="text-muted analyze-templates">
+          Templates:{' '}
+          <a href={templateHref(ACCOUNTS_TEMPLATE)} download="accounts.csv">
+            accounts.csv
+          </a>{' '}
+          <a href={templateHref(TRANSACTIONS_TEMPLATE)} download="transactions.csv">
+            transactions.csv
+          </a>
+        </span>
+      </div>
+      <p className="text-muted analyze-hint">
+        Max 5 MB per file, 5,000 accounts, 25,000 transactions. Optional{' '}
+        <code className="mono">label</code> and{' '}
+        <code className="mono">ring_label</code> columns may be appended to
+        accounts.csv; without them no evaluation metrics are reported.
+      </p>
+      {analyzing && <p className="loading-text">Scoring accounts and detecting rings…</p>}
+      {analyzeError && (
+        <p className="analyze-error" role="alert">
+          {analyzeError}
+        </p>
+      )}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -106,11 +202,14 @@ export default function DashboardScreen() {
 
   if (error) {
     return (
-      <div className="inline-error">
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()} style={{ marginTop: 8 }}>
-          Retry
-        </button>
+      <div className="dashboard">
+        <div className="inline-error">
+          <p>{error}</p>
+          <button onClick={() => setReloadKey((key) => key + 1)} style={{ marginTop: 8 }}>
+            Retry
+          </button>
+        </div>
+        {uploadPanel}
       </div>
     );
   }
@@ -144,6 +243,8 @@ export default function DashboardScreen() {
           Review high-risk new cases <span aria-hidden="true">→</span>
         </span>
       </Link>
+
+      {uploadPanel}
 
       {/* Summary metrics */}
       <div className="panel dashboard-metrics">

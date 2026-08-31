@@ -3,19 +3,25 @@
 from __future__ import annotations
 
 import os
+import tempfile
+import threading
+import uuid
 from collections.abc import Iterator
 from datetime import date, datetime, time, timezone
+from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy import and_, exists, func, select
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+from starlette.concurrency import run_in_threadpool
 
 from . import __version__
+from .data import DataValidationError, load_dataset
 from .db import (
     Account,
     AccountResult,
@@ -25,9 +31,20 @@ from .db import (
     RingMember,
     TransactionRecord,
     create_database_engine,
+    load_pipeline_run,
 )
+from .pipeline import run_pipeline
 
 ReviewStatus = Literal["new", "reviewing", "confirmed", "dismissed"]
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+MAX_ACCOUNT_ROWS = 5_000
+MAX_TRANSACTION_ROWS = 25_000
+DEFAULT_MODEL_ARTIFACT = Path("runs/demo/artifacts/model.pkl")
+
+# ponytail: one process-wide lock, because the Buildathon deployment is a single
+# uvicorn process sharing one workspace, so in-process mutual exclusion is the
+# whole story. Move to a DB advisory lock if this ever runs more than one worker.
+_analysis_lock = threading.Lock()
 VALID_TRANSITIONS: dict[str, set[str]] = {
     "new": {"new", "reviewing"},
     "reviewing": {"new", "reviewing", "confirmed", "dismissed"},
@@ -142,13 +159,25 @@ class ReviewStatusResponse(BaseModel):
     status: ReviewStatus
 
 
+class AnalyzeResponse(BaseModel):
+    run_id: str
+    account_count: int
+    transaction_count: int
+    ring_count: int
+    labels_available: bool
+
+
 def create_app(
     *,
     engine: Engine | None = None,
     database_url: str | None = None,
     allowed_origins: list[str] | None = None,
+    model_artifact: Path | None = None,
 ) -> FastAPI:
     engine = engine or create_database_engine(database_url)
+    model_artifact = model_artifact or Path(
+        os.getenv("MODEL_ARTIFACT", str(DEFAULT_MODEL_ARTIFACT))
+    )
     if allowed_origins is None:
         allowed_origins = [
             origin.strip()
@@ -159,7 +188,7 @@ def create_app(
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,
-        allow_methods=["GET", "PATCH"],
+        allow_methods=["GET", "PATCH", "POST"],
         allow_headers=["Content-Type"],
     )
 
@@ -436,7 +465,99 @@ def create_app(
             ],
         }
 
+    @app.post("/api/v1/analyze", response_model=AnalyzeResponse, tags=["review"])
+    async def analyze(
+        accounts: UploadFile = File(..., description="accounts.csv, UTF-8"),
+        transactions: UploadFile = File(..., description="transactions.csv, UTF-8"),
+    ) -> dict[str, object]:
+        payloads = {
+            "accounts.csv": await _read_upload(accounts, "accounts.csv"),
+            "transactions.csv": await _read_upload(transactions, "transactions.csv"),
+        }
+        if not _analysis_lock.acquire(blocking=False):
+            raise HTTPException(status_code=409, detail="Another analysis is already running")
+        try:
+            return await run_in_threadpool(_analyze, payloads, engine, model_artifact)
+        finally:
+            _analysis_lock.release()
+
     return app
+
+
+async def _read_upload(upload: UploadFile, name: str) -> str:
+    """Buffer one upload under the size cap and decode it as UTF-8 text."""
+    chunks: list[bytes] = []
+    total = 0
+    while chunk := await upload.read(64 * 1024):
+        total += len(chunk)
+        if total > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"{name} exceeds the {MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit",
+            )
+        chunks.append(chunk)
+    if not total:
+        raise HTTPException(status_code=400, detail=f"{name} is empty")
+    try:
+        return b"".join(chunks).decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise HTTPException(status_code=400, detail=f"{name} must be UTF-8 encoded") from error
+
+
+def _analyze(
+    payloads: dict[str, str], engine: Engine, model_artifact: Path
+) -> dict[str, object]:
+    """Score uploaded CSVs with the existing model and make the result active."""
+    if not model_artifact.is_file():
+        raise HTTPException(status_code=503, detail="No trained model artifact available")
+    run_id = f"upload_{uuid.uuid4().hex}"
+    # Raw uploads live only inside this directory, so they are gone once the request ends.
+    with tempfile.TemporaryDirectory(prefix="analyze-") as temporary:
+        workspace = Path(temporary)
+        source = workspace / "source"
+        source.mkdir()
+        for name, text in payloads.items():
+            (source / name).write_text(text, encoding="utf-8")
+
+        try:
+            accounts, transaction_rows = load_dataset(
+                source / "accounts.csv", source / "transactions.csv"
+            )
+        except DataValidationError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        _require_row_limit(len(accounts), MAX_ACCOUNT_ROWS, "accounts.csv")
+        _require_row_limit(len(transaction_rows), MAX_TRANSACTION_ROWS, "transactions.csv")
+
+        try:
+            report = run_pipeline(
+                workspace / "runs",
+                run_id,
+                model_artifact=model_artifact,
+                source_dir=source,
+            )
+        except DataValidationError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        except ValueError as error:
+            raise HTTPException(status_code=422, detail=str(error)) from error
+        load_pipeline_run(workspace / "runs" / run_id, engine)
+
+    counts = report["counts"]
+    return {
+        "run_id": run_id,
+        "account_count": counts["accounts"],
+        "transaction_count": counts["transactions"],
+        "ring_count": counts["rings"],
+        # Partially labelled data is not usable ground truth, so it counts as unavailable.
+        "labels_available": bool(accounts)
+        and all(account.label is not None for account in accounts),
+    }
+
+
+def _require_row_limit(count: int, limit: int, name: str) -> None:
+    if count > limit:
+        raise HTTPException(
+            status_code=413, detail=f"{name} has {count} rows, more than the {limit} row limit"
+        )
 
 
 def _current_run_id(session: Session) -> str:

@@ -113,6 +113,14 @@ export interface ReviewStatusUpdate {
   status: ReviewStatus;
 }
 
+export interface AnalyzeResponse {
+  run_id: string;
+  account_count: number;
+  transaction_count: number;
+  ring_count: number;
+  labels_available: boolean;
+}
+
 export interface RingFilterParams {
   page?: number;
   page_size?: number;

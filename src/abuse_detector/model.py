@@ -29,7 +29,7 @@ LABEL_FIELDS = ("account_id", "label", "ring_label")
 
 def load_training_data(
     features_path: Path, labels_path: Path
-) -> tuple[list[str], list[list[float]], list[int], list[str], list[dict[str, float]]]:
+) -> tuple[list[str], list[list[float]], list[int | None], list[str], list[dict[str, float]]]:
     feature_rows = _read_csv(features_path, FEATURE_FIELDS)
     label_rows = _read_csv(labels_path, LABEL_FIELDS)
     labels_by_id: dict[str, tuple[int, str]] = {}
@@ -37,11 +37,14 @@ def load_training_data(
         account_id = row["account_id"]
         if not account_id or account_id in labels_by_id:
             raise ValueError(f"{labels_path}:{row_number}: missing or duplicate account_id")
-        if row["label"] not in {"0", "1"}:
-            raise ValueError(f"{labels_path}:{row_number}: label must be 0 or 1")
+        if row["label"] not in {"", "0", "1"}:
+            raise ValueError(f"{labels_path}:{row_number}: label must be 0, 1, or empty")
         if row["label"] == "1" and not row["ring_label"]:
             raise ValueError(f"{labels_path}:{row_number}: abusive account requires ring_label")
-        labels_by_id[account_id] = (int(row["label"]), row["ring_label"])
+        labels_by_id[account_id] = (
+            int(row["label"]) if row["label"] else None,
+            row["ring_label"],
+        )
 
     account_ids: list[str] = []
     matrix: list[list[float]] = []
@@ -76,7 +79,7 @@ def load_training_data(
 
 def grouped_stratified_split(
     account_ids: list[str],
-    labels: list[int],
+    labels: list[int | None],
     rings: list[str],
     *,
     seed: int = 42,
@@ -121,6 +124,8 @@ def train_and_evaluate(
         raise ValueError("threshold must be between 0 and 1")
     started = time.perf_counter()
     account_ids, matrix, labels, rings, numeric_rows = load_training_data(features_path, labels_path)
+    if any(label is None for label in labels):
+        raise ValueError("training requires a label for every account")
     train_indices, test_indices = grouped_stratified_split(
         account_ids, labels, rings, seed=seed, test_size=test_size
     )

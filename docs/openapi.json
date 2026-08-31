@@ -87,6 +87,61 @@
         "title": "AccountDetail",
         "type": "object"
       },
+      "AnalyzeResponse": {
+        "properties": {
+          "account_count": {
+            "title": "Account Count",
+            "type": "integer"
+          },
+          "labels_available": {
+            "title": "Labels Available",
+            "type": "boolean"
+          },
+          "ring_count": {
+            "title": "Ring Count",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "transaction_count": {
+            "title": "Transaction Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "run_id",
+          "account_count",
+          "transaction_count",
+          "ring_count",
+          "labels_available"
+        ],
+        "title": "AnalyzeResponse",
+        "type": "object"
+      },
+      "Body_analyze_api_v1_analyze_post": {
+        "properties": {
+          "accounts": {
+            "contentMediaType": "application/octet-stream",
+            "description": "accounts.csv, UTF-8",
+            "title": "Accounts",
+            "type": "string"
+          },
+          "transactions": {
+            "contentMediaType": "application/octet-stream",
+            "description": "transactions.csv, UTF-8",
+            "title": "Transactions",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accounts",
+          "transactions"
+        ],
+        "title": "Body_analyze_api_v1_analyze_post",
+        "type": "object"
+      },
       "GraphEdge": {
         "properties": {
           "source": {
@@ -686,6 +741,47 @@
           }
         },
         "summary": "Account Detail",
+        "tags": [
+          "review"
+        ]
+      }
+    },
+    "/api/v1/analyze": {
+      "post": {
+        "operationId": "analyze_api_v1_analyze_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_analyze_api_v1_analyze_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Analyze",
         "tags": [
           "review"
         ]

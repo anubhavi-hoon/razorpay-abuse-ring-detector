@@ -124,6 +124,7 @@ class ApiTest(unittest.TestCase):
                     "/api/v1/rings/{ring_id}",
                     "/api/v1/rings/{ring_id}/status",
                     "/api/v1/accounts/{account_id}",
+                    "/api/v1/analyze",
                 }
                 self.assertEqual(set(schema["paths"]), expected_paths)
                 page_size = next(

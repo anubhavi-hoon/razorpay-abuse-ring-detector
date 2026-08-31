@@ -6,6 +6,7 @@ import type {
   ReviewStatusResponse,
   ReviewStatus,
   RingFilterParams,
+  AnalyzeResponse,
 } from './types';
 
 const API_BASE =
@@ -112,6 +113,25 @@ export function fetchRingDetail(ringId: string): Promise<RingDetail> {
 
 export function fetchAccountDetail(accountId: string): Promise<AccountDetail> {
   return get<AccountDetail>(`/accounts/${encodeURIComponent(accountId)}`);
+}
+
+/** Upload accounts/transactions CSVs; the resulting run becomes the active one. */
+export async function analyzeUpload(
+  accounts: File,
+  transactions: File,
+): Promise<AnalyzeResponse> {
+  const body = new FormData();
+  body.append('accounts', accounts);
+  body.append('transactions', transactions);
+
+  let res: Response;
+  try {
+    // No explicit Content-Type: the browser adds the multipart boundary.
+    res = await fetch(`${API_BASE}/analyze`, { method: 'POST', body });
+  } catch {
+    throw new ApiError(0, 'Network error. Could not reach the API.');
+  }
+  return handleResponse<AnalyzeResponse>(res);
 }
 
 export function updateRingStatus(
