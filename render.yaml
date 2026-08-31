@@ -18,6 +18,7 @@ services:
   - type: web
     name: anubhavi-razorpay-abuse
     runtime: static
+    renderSubdomainPolicy: enabled
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
