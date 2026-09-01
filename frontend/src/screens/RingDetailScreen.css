@@ -12,6 +12,20 @@
 /*  Header                                                             */
 /* ------------------------------------------------------------------ */
 
+.ring-detail-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ring-detail-kicker {
+  color: var(--accent-blue);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .ring-detail-header-top {
   display: flex;
   justify-content: space-between;
@@ -24,8 +38,9 @@
   display: flex;
   align-items: center;
   gap: var(--sp-4);
-  margin-top: var(--sp-2);
-  font-size: 0.9rem;
+  margin-top: var(--sp-3);
+  font-size: 0.85rem;
+  flex-wrap: wrap;
 }
 
 .ring-detail-actions {
@@ -41,22 +56,80 @@
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: var(--sp-4);
+  gap: var(--sp-3);
 }
 
 .metric-cell {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-1);
+  gap: 2px;
+  padding: var(--sp-3);
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
 }
 
 .metric-cell-label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .metric-cell-value {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Reason pills in narrative */
+.ring-reasons-panel .reason-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.relationship-panel {
+  padding: var(--sp-6);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive Breakpoints                                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .ring-detail-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ring-detail-actions {
+    width: 100%;
+  }
+
+  .ring-detail-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .ring-detail-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .relationship-panel {
+    padding: var(--sp-4);
+  }
+}
+
+@media (max-width: 380px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
 }

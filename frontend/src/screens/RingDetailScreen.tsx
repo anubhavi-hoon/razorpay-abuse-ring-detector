@@ -61,6 +61,7 @@ export default function RingDetailScreen() {
   if (loading) {
     return (
       <div className="ring-detail skeleton-pulse">
+        {/* 1. Header skeleton */}
         <div className="panel ring-detail-header">
           <div className="ring-detail-header-top">
             <div>
@@ -80,6 +81,31 @@ export default function RingDetailScreen() {
           </div>
         </div>
 
+        {/* 2. Why flagged skeleton */}
+        <div className="panel">
+          <div className="panel-header">
+            <span className="skeleton-box" style={{ width: 100, height: 14 }} />
+          </div>
+          <div className="reason-pills">
+            {[1, 2, 3].map((i) => (
+              <span
+                key={i}
+                className="skeleton-box"
+                style={{ width: 140, height: 22 }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* 3. Connection map skeleton */}
+        <div className="panel">
+          <div
+            className="skeleton-box"
+            style={{ width: '100%', height: 260 }}
+          />
+        </div>
+
+        {/* 4. Metrics skeleton */}
         <div className="panel">
           <div className="panel-header">
             <span className="skeleton-box" style={{ width: 90, height: 14 }} />
@@ -97,31 +123,7 @@ export default function RingDetailScreen() {
           </div>
         </div>
 
-        <div className="panel">
-          <div className="panel-header">
-            <span className="skeleton-box" style={{ width: 100, height: 14 }} />
-          </div>
-          <div className="reason-pills">
-            {[1, 2, 3].map((i) => (
-              <span
-                key={i}
-                className="skeleton-box"
-                style={{ width: 140, height: 22 }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="panel">
-          <div className="panel-header">
-            <span className="skeleton-box" style={{ width: 130, height: 14 }} />
-          </div>
-          <div
-            className="skeleton-box"
-            style={{ width: '100%', height: 160 }}
-          />
-        </div>
-
+        {/* 5. Members table skeleton */}
         <div className="panel">
           <div className="panel-header">
             <span className="skeleton-box" style={{ width: 70, height: 14 }} />
@@ -189,11 +191,14 @@ export default function RingDetailScreen() {
 
   return (
     <div className="ring-detail">
-      {/* Header */}
+      {/* 1. Case identity, risk, status, and review actions */}
       <div className="panel ring-detail-header">
         <div className="ring-detail-header-top">
           <div>
-            <h1 className="page-title mono">{data.ring_id}</h1>
+            <div className="ring-detail-title-row">
+              <span className="ring-detail-kicker">Abuse ring</span>
+              <h1 className="page-title mono">{data.ring_id}</h1>
+            </div>
             <div className="ring-detail-meta">
               <div className="risk-score">
                 <span
@@ -242,9 +247,26 @@ export default function RingDetailScreen() {
         </div>
       </div>
 
-      {/* Metrics */}
-      <div className="panel">
-        <div className="panel-header">Ring Metrics</div>
+      {/* 2. Why it was flagged */}
+      <div className="panel ring-reasons-panel">
+        <div className="panel-header">Why this was flagged</div>
+        <div className="reason-pills">
+          {data.reason_codes.map((code) => (
+            <span key={code} className="reason-pill">
+              {getReasonSentence(code)}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* 3. Interactive connection map */}
+      <div className="panel relationship-panel">
+        <RelationshipGraph nodes={data.nodes} edges={data.edges} />
+      </div>
+
+      {/* 4. Supporting metrics */}
+      <div className="panel ring-metrics-panel">
+        <div className="panel-header">Supporting Metrics</div>
         <div className="metrics-grid">
           <div className="metric-cell">
             <span className="metric-cell-label">Density</span>
@@ -289,27 +311,9 @@ export default function RingDetailScreen() {
         </div>
       </div>
 
-      {/* Reason codes */}
-      <div className="panel">
-        <div className="panel-header">Why this was flagged</div>
-        <div className="reason-pills">
-          {data.reason_codes.map((code) => (
-            <span key={code} className="reason-pill">
-              {getReasonSentence(code)}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Relationship graph */}
-      <div className="panel">
-        <div className="panel-header">Relationship Graph</div>
-        <RelationshipGraph nodes={data.nodes} edges={data.edges} />
-      </div>
-
-      {/* Members table (accessible fallback) */}
-      <div className="panel">
-        <div className="panel-header">Members</div>
+      {/* 5. Members table (accessible fallback) */}
+      <div className="panel ring-members-panel">
+        <div className="panel-header">Member Accounts</div>
         <div className="table-responsive">
           <table>
             <thead>
@@ -344,9 +348,9 @@ export default function RingDetailScreen() {
         </div>
       </div>
 
-      {/* Shared entities */}
-      <div className="panel">
-        <div className="panel-header">Shared Entities</div>
+      {/* 6. Shared entities table */}
+      <div className="panel ring-entities-panel">
+        <div className="panel-header">Shared Identifiers</div>
         <div className="table-responsive">
           <table>
             <thead>

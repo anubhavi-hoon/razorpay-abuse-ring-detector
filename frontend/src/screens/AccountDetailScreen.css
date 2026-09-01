@@ -12,12 +12,26 @@
 /*  Header                                                             */
 /* ------------------------------------------------------------------ */
 
+.account-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.account-detail-kicker {
+  color: var(--accent-blue);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .account-header-meta {
   display: flex;
   align-items: center;
   gap: var(--sp-4);
-  margin-top: var(--sp-2);
-  font-size: 0.9rem;
+  margin-top: var(--sp-3);
+  font-size: 0.85rem;
   flex-wrap: wrap;
 }
 
@@ -28,24 +42,32 @@
 .identity-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--sp-4);
+  gap: var(--sp-3);
 }
 
 .identity-field {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: var(--sp-3);
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
 }
 
 .identity-label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .identity-value {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
   word-break: break-all;
+  color: var(--text-primary);
 }
 
 /* ------------------------------------------------------------------ */
@@ -54,8 +76,39 @@
 
 .ring-links {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--sp-2);
+}
+
+.ring-link-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-surface-alt);
+  font-size: 0.82rem;
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: background-color 150ms ease, border-color 150ms ease;
+  word-break: break-all;
+}
+
+.ring-link-badge span:first-child {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.ring-link-badge:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-blue);
+  text-decoration: none;
 }
 
 /* ------------------------------------------------------------------ */
@@ -63,18 +116,41 @@
 /* ------------------------------------------------------------------ */
 
 .txn-status {
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .txn-status--succeeded {
-  color: var(--text-primary);
+  color: hsl(152, 40%, 32%);
+  background: hsl(152, 40%, 93%);
 }
 
 .txn-status--failed {
-  color: var(--status-confirmed);
+  color: hsl(4, 58%, 36%);
+  background: hsl(4, 58%, 94%);
 }
 
 .txn-status--refunded {
-  color: var(--status-reviewing);
+  color: hsl(36, 70%, 34%);
+  background: hsl(36, 70%, 93%);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive Breakpoints                                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .identity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-header-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
 }

@@ -8,12 +8,33 @@
   gap: var(--sp-5);
 }
 
+.ring-list-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--sp-2) 0 0;
+}
+
+.ring-list-kicker {
+  color: var(--accent-blue);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ring-list-heading p {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin-top: 2px;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Filter bar                                                         */
 /* ------------------------------------------------------------------ */
 
 .filter-bar {
-  padding: var(--sp-4) var(--sp-5);
+  padding: var(--sp-5) var(--sp-6);
 }
 
 .filter-fields {
@@ -26,6 +47,7 @@
 .filter-field {
   display: flex;
   flex-direction: column;
+  gap: var(--sp-1);
   min-width: 140px;
 }
 
@@ -38,6 +60,7 @@
 .filter-actions {
   display: flex;
   gap: var(--sp-3);
+  align-items: center;
 }
 
 /* ------------------------------------------------------------------ */
@@ -47,6 +70,7 @@
 .ring-table-wrap {
   padding: 0;
   overflow-x: auto;
+  border-radius: var(--radius-lg);
 }
 
 .ring-table th,
@@ -54,11 +78,32 @@
   white-space: nowrap;
 }
 
+.ring-id-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.ring-id-arrow {
+  display: inline-block;
+  color: var(--text-muted);
+  transition: transform 150ms ease, color 150ms ease;
+}
+
+.ring-id-link:hover .ring-id-arrow {
+  transform: translateX(3px);
+  color: var(--accent-blue);
+}
+
+/* Entity types and reason code columns may wrap */
 .ring-table td:nth-child(6),
 .ring-table td:nth-child(7) {
   white-space: normal;
+  min-width: 140px;
 }
 
+/* Reason pills in table */
 .reason-pills {
   display: flex;
   flex-wrap: wrap;
@@ -75,9 +120,54 @@
   align-items: center;
   justify-content: center;
   gap: var(--sp-4);
+  padding: var(--sp-2) 0;
 }
 
 .pagination-info {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive Breakpoints                                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .filter-fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-field {
+    min-width: 0;
+  }
+
+  .filter-field input,
+  .filter-field select {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-bar {
+    padding: var(--sp-4);
+  }
+
+  .filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    width: 100%;
+  }
+
+  .filter-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: var(--sp-2);
+  }
 }

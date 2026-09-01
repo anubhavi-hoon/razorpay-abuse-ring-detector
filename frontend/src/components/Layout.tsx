@@ -13,7 +13,7 @@ function Breadcrumbs() {
   const segments = location.pathname.split('/').filter(Boolean);
 
   const crumbs: { label: string; path: string }[] = [
-    { label: 'Dashboard', path: '/' },
+    { label: 'Dashboard', path: '/dashboard' },
   ];
 
   for (let i = 0; i < segments.length; i++) {
@@ -96,18 +96,35 @@ export default function Layout() {
           id="sidebar-nav-menu"
           className={`sidebar ${sidebarOpen ? 'sidebar--open' : ''}`}
         >
-          <div className="sidebar-title">
-            <span className="sidebar-title-text">Abuse Ring Detector</span>
+          <div className="sidebar-brand">
+            <div className="sidebar-brand-badge" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M5 8h6M8 5v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="sidebar-brand-text">
+              <span className="sidebar-brand-name">Abuse Detector</span>
+              <span className="sidebar-brand-sub">Fraud Workbench</span>
+            </div>
           </div>
           <nav className="sidebar-nav">
             <NavLink
-              to="/"
+              to="/dashboard"
               end
               className={({ isActive }) =>
                 `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
               }
             >
-              Dashboard
+              <span className="sidebar-link-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <rect x="2" y="2" width="5" height="5" rx="1" />
+                  <rect x="9" y="2" width="5" height="5" rx="1" />
+                  <rect x="2" y="9" width="5" height="5" rx="1" />
+                  <rect x="9" y="9" width="5" height="5" rx="1" />
+                </svg>
+              </span>
+              Overview
             </NavLink>
             <NavLink
               to="/rings"
@@ -115,9 +132,21 @@ export default function Layout() {
                 `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
               }
             >
-              Rings
+              <span className="sidebar-link-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="5" cy="5" r="3" />
+                  <circle cx="11" cy="11" r="3" />
+                  <path d="M7 7l2 2" strokeLinecap="round" />
+                </svg>
+              </span>
+              Abuse Rings
             </NavLink>
           </nav>
+          <div className="sidebar-bottom">
+            <a href="/#/" className="sidebar-back-link">
+              ← Product page
+            </a>
+          </div>
         </aside>
 
         {/* Overlay for mobile sidebar */}

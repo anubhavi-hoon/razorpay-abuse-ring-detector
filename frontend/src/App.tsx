@@ -1,5 +1,6 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import LandingScreen from './screens/LandingScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import RingListScreen from './screens/RingListScreen';
 import RingDetailScreen from './screens/RingDetailScreen';
@@ -9,9 +10,12 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
+        {/* Landing page — outside Layout, no sidebar */}
+        <Route index element={<LandingScreen />} />
+
+        {/* Investigation console — inside Layout with sidebar */}
         <Route element={<Layout />}>
-          <Route index element={<DashboardScreen />} />
-          <Route path="dashboard" element={<Navigate to="/" replace />} />
+          <Route path="dashboard" element={<DashboardScreen />} />
           <Route path="rings" element={<RingListScreen />} />
           <Route path="rings/:ringId" element={<RingDetailScreen />} />
           <Route path="accounts/:accountId" element={<AccountDetailScreen />} />

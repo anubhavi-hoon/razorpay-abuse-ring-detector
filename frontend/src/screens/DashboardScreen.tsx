@@ -25,7 +25,19 @@ export default function DashboardScreen() {
   const [transactionsFile, setTransactionsFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
+  const [showColdStartNotice, setShowColdStartNotice] = useState(false);
   const { addToast } = useToast();
+
+  useEffect(() => {
+    if (!loading) {
+      setShowColdStartNotice(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setShowColdStartNotice(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -140,6 +152,12 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <div className="dashboard skeleton-pulse">
+        {showColdStartNotice && (
+          <div className="dashboard-coldstart-notice" role="status" aria-live="polite">
+            <span className="dashboard-coldstart-dot" aria-hidden="true" />
+            <span>Waking the analysis service — free hosting may take up to a minute.</span>
+          </div>
+        )}
         <h1 className="page-title">
           <span className="skeleton-box" style={{ width: 140, height: 24 }} />
         </h1>
@@ -229,7 +247,16 @@ export default function DashboardScreen() {
 
   return (
     <div className="dashboard">
-      <h1 className="page-title">Dashboard</h1>
+      <div className="dashboard-heading">
+        <div>
+          <span className="dashboard-kicker">Live detection run</span>
+          <h1 className="page-title">Investigation overview</h1>
+          <p>Prioritize coordinated abuse rings, then follow the shared signals.</p>
+        </div>
+        <Link to="/rings" className="dashboard-browse-link">
+          Browse all rings <span aria-hidden="true">→</span>
+        </Link>
+      </div>
 
       <Link
         to={`/rings?min_score=${SCORE_BUCKETS.high.min * 100}&status=new`}
@@ -244,88 +271,91 @@ export default function DashboardScreen() {
         </span>
       </Link>
 
-      {uploadPanel}
-
-      {/* Summary metrics */}
-      <div className="panel dashboard-metrics">
-        <div className="panel-header">Run Summary</div>
-        <div className="metrics-row">
-          <div className="metric">
-            <span className="metric-value">{data.account_count.toLocaleString()}</span>
-            <span className="metric-label">Accounts</span>
-          </div>
-          <div className="metric">
-            <span className="metric-value">
-              {data.transaction_count.toLocaleString()}
-            </span>
-            <span className="metric-label">Transactions</span>
-          </div>
-          <div className="metric">
-            <span className="metric-value">
-              {data.scored_account_count.toLocaleString()}
-            </span>
-            <span className="metric-label">Scored</span>
-          </div>
-          <div className="metric">
-            <span className="metric-value">
-              {data.flagged_account_count.toLocaleString()}
-            </span>
-            <span className="metric-label">Flagged</span>
-          </div>
-          <div className="metric">
-            <span className="metric-value">{data.ring_count.toLocaleString()}</span>
-            <span className="metric-label">Rings</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Score distribution */}
-      <div className="panel dashboard-scores">
-        <div className="panel-header">Score Distribution</div>
-        {scoreTotal > 0 ? (
-          <div className="score-dist">
-            {(['low', 'medium', 'high'] as const).map((bucket) => {
-              const count = scoreDist[bucket] ?? 0;
-              const pct = scoreTotal > 0 ? (count / scoreTotal) * 100 : 0;
-              return (
-                <div key={bucket} className="score-dist-row">
-                  <span className="score-dist-label">
-                    {bucket.charAt(0).toUpperCase() + bucket.slice(1)}
-                  </span>
-                  <div className="score-dist-bar-track">
-                    <div
-                      className={`score-dist-bar-fill score-dist-bar--${bucket}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
-                  <span className="score-dist-count mono">{count}</span>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="text-muted">No scored rings.</p>
-        )}
-      </div>
-
-      {/* Review status */}
-      <div className="panel dashboard-review">
-        <div className="panel-header">Review Status</div>
-        <div className="review-status-row">
-          {statusEntries.map(({ key, label }) => (
-            <Link
-              key={key}
-              to={`/rings?status=${key}`}
-              className={`review-status-item status-${key}`}
-            >
-              <span className="review-status-count mono">
-                {(data.review_status_totals[key] ?? 0).toLocaleString()}
+      <div className="dashboard-overview-grid">
+        {/* Summary metrics */}
+        <div className="panel dashboard-metrics">
+          <div className="panel-header">Run summary</div>
+          <div className="metrics-row">
+            <div className="metric">
+              <span className="metric-value">{data.account_count.toLocaleString()}</span>
+              <span className="metric-label">Accounts</span>
+            </div>
+            <div className="metric">
+              <span className="metric-value">
+                {data.transaction_count.toLocaleString()}
               </span>
-              <span className="review-status-label">{label}</span>
-            </Link>
-          ))}
+              <span className="metric-label">Transactions</span>
+            </div>
+            <div className="metric">
+              <span className="metric-value">
+                {data.scored_account_count.toLocaleString()}
+              </span>
+              <span className="metric-label">Scored</span>
+            </div>
+            <div className="metric">
+              <span className="metric-value">
+                {data.flagged_account_count.toLocaleString()}
+              </span>
+              <span className="metric-label">Flagged</span>
+            </div>
+            <div className="metric">
+              <span className="metric-value">{data.ring_count.toLocaleString()}</span>
+              <span className="metric-label">Rings</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Score distribution */}
+        <div className="panel dashboard-scores">
+          <div className="panel-header">Risk distribution</div>
+          {scoreTotal > 0 ? (
+            <div className="score-dist">
+              {(['low', 'medium', 'high'] as const).map((bucket) => {
+                const count = scoreDist[bucket] ?? 0;
+                const pct = scoreTotal > 0 ? (count / scoreTotal) * 100 : 0;
+                return (
+                  <div key={bucket} className="score-dist-row">
+                    <span className="score-dist-label">
+                      {bucket.charAt(0).toUpperCase() + bucket.slice(1)}
+                    </span>
+                    <div className="score-dist-bar-track">
+                      <div
+                        className={`score-dist-bar-fill score-dist-bar--${bucket}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="score-dist-count mono">{count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-muted">No scored rings.</p>
+          )}
+        </div>
+
+        {/* Review status */}
+        <div className="panel dashboard-review">
+          <div className="panel-header">Investigation queue</div>
+          <div className="review-status-row">
+            {statusEntries.map(({ key, label }) => (
+              <Link
+                key={key}
+                to={`/rings?status=${key}`}
+                className={`review-status-item status-${key}`}
+              >
+                <span className="review-status-count mono">
+                  {(data.review_status_totals[key] ?? 0).toLocaleString()}
+                </span>
+                <span className="review-status-label">{label}</span>
+                <span className="review-status-arrow" aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
+
+      {uploadPanel}
     </div>
   );
 }

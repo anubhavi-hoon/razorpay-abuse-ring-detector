@@ -143,3 +143,25 @@ export function updateRingStatus(
     { status },
   );
 }
+
+/* ------------------------------------------------------------------ */
+/*  Cold-start service warm-up                                         */
+/* ------------------------------------------------------------------ */
+
+let warmPromise: Promise<boolean> | null = null;
+
+/**
+ * Pings the /health endpoint to wake up cold-start backend instances.
+ * Deduplicates concurrent calls via a module-level promise and resets on failure.
+ */
+export function warmApi(): Promise<boolean> {
+  if (!warmPromise) {
+    warmPromise = get<{ status: string }>('/health')
+      .then(() => true)
+      .catch((err) => {
+        warmPromise = null;
+        throw err;
+      });
+  }
+  return warmPromise;
+}

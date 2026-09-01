@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchAccountDetail, ApiError } from '../api';
 import type { AccountDetail } from '../types';
 import { formatScore, formatDateTime, getReasonSentence } from '../constants';
+import FeatureExplorer, { FeatureExplorerSkeleton } from '../components/FeatureExplorer';
 import './AccountDetailScreen.css';
 
 export default function AccountDetailScreen() {
@@ -81,39 +82,7 @@ export default function AccountDetailScreen() {
           </div>
         </div>
 
-        <div className="panel">
-          <div className="panel-header">
-            <span className="skeleton-box" style={{ width: 70, height: 14 }} />
-          </div>
-          <div className="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>Feature</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[1, 2, 3].map((i) => (
-                  <tr key={i}>
-                    <td>
-                      <span
-                        className="skeleton-box"
-                        style={{ width: 140, height: 14 }}
-                      />
-                    </td>
-                    <td>
-                      <span
-                        className="skeleton-box"
-                        style={{ width: 60, height: 14 }}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <FeatureExplorerSkeleton />
       </div>
     );
   }
@@ -146,30 +115,36 @@ export default function AccountDetailScreen() {
     { label: 'Payment Instrument', value: data.payment_instrument_id },
   ];
 
-  function formatFeatureValue(key: string, value: number): string {
-    if (key.toLowerCase().includes('ratio')) {
-      return `${(value * 100).toFixed(2)}%`;
-    }
-    return value.toFixed(2);
-  }
-
   return (
     <div className="account-detail">
       {/* Header */}
-      <div className="panel">
-        <h1 className="page-title mono">{data.account_id}</h1>
+      <div className="panel account-header-panel">
+        <div className="account-title-row">
+          <span className="account-detail-kicker">Account investigation</span>
+          <h1 className="page-title mono">{data.account_id}</h1>
+        </div>
         <div className="account-header-meta">
-          <div className="score-bar">
-            <div className="score-bar-fill">
-              <div
-                className="score-bar-fill-inner"
-                style={{
-                  width: `${data.ml_score * 100}%`,
-                  background: scoreColor,
-                }}
-              />
+          <div className="risk-score">
+            <span
+              className="risk-score-label"
+              style={{ color: scoreColor }}
+            >
+              ML Risk Score
+            </span>
+            <div className="score-bar">
+              <div className="score-bar-fill">
+                <div
+                  className="score-bar-fill-inner"
+                  style={{
+                    width: `${data.ml_score * 100}%`,
+                    background: scoreColor,
+                  }}
+                />
+              </div>
+              <span className="risk-score-exact mono">
+                {formatScore(data.ml_score)}
+              </span>
             </div>
-            <span className="mono">{formatScore(data.ml_score)}</span>
           </div>
           <span
             className={`status-badge ${
@@ -186,7 +161,7 @@ export default function AccountDetailScreen() {
 
       {/* Identity */}
       <div className="panel">
-        <div className="panel-header">Identity</div>
+        <div className="panel-header">Identity Attributes</div>
         <div className="identity-grid">
           {identityFields.map((f) => (
             <div key={f.label} className="identity-field">
@@ -199,7 +174,7 @@ export default function AccountDetailScreen() {
 
       {/* Reason codes */}
       <div className="panel">
-        <div className="panel-header">Reason Codes</div>
+        <div className="panel-header">Why this was flagged</div>
         <div className="reason-pills">
           {data.reason_codes.map((code) => (
             <span key={code} className="reason-pill">
@@ -209,28 +184,8 @@ export default function AccountDetailScreen() {
         </div>
       </div>
 
-      {/* Features */}
-      <div className="panel">
-        <div className="panel-header">Features</div>
-        <div className="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Feature</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(data.features).map(([key, value]) => (
-                <tr key={key}>
-                  <td>{key}</td>
-                  <td className="mono">{formatFeatureValue(key, value)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Behavioral Feature Explorer */}
+      <FeatureExplorer features={data.features} />
 
       {/* Ring membership */}
       <div className="panel">
@@ -238,8 +193,8 @@ export default function AccountDetailScreen() {
         {data.ring_ids.length > 0 ? (
           <div className="ring-links">
             {data.ring_ids.map((rid) => (
-              <Link key={rid} to={`/rings/${rid}`} className="mono">
-                {rid}
+              <Link key={rid} to={`/rings/${rid}`} className="mono ring-link-badge">
+                <span>Ring:</span> {rid} <span aria-hidden="true">→</span>
               </Link>
             ))}
           </div>

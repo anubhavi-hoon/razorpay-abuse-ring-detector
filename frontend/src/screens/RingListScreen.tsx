@@ -103,11 +103,15 @@ export default function RingListScreen() {
 
   return (
     <div className="ring-list">
-      <h1 className="page-title">Rings</h1>
+      <div className="ring-list-heading">
+        <span className="ring-list-kicker">Detection run</span>
+        <h1 className="page-title">Abuse rings</h1>
+        <p>Investigate and review coordinated multi-account promotional abuse rings.</p>
+      </div>
 
       {/* Filter bar */}
       <form className="panel filter-bar" onSubmit={handleApplyFilters}>
-        <div className="panel-header">Filters</div>
+        <div className="panel-header">Filter rings</div>
         <div className="filter-fields">
           <div className="filter-field">
             <label htmlFor="filter-min-score">Min Score (%)</label>
@@ -125,7 +129,7 @@ export default function RingListScreen() {
             />
           </div>
           <div className="filter-field">
-            <label htmlFor="filter-status">Status</label>
+            <label htmlFor="filter-status">Review Status</label>
             <select
               id="filter-status"
               value={filters.status}
@@ -133,7 +137,7 @@ export default function RingListScreen() {
                 setFilters((f) => ({ ...f, status: e.target.value }))
               }
             >
-              <option value="">All</option>
+              <option value="">All statuses</option>
               <option value="new">New</option>
               <option value="reviewing">Reviewing</option>
               <option value="confirmed">Confirmed</option>
@@ -141,11 +145,11 @@ export default function RingListScreen() {
             </select>
           </div>
           <div className="filter-field">
-            <label htmlFor="filter-promotion">Promotion</label>
+            <label htmlFor="filter-promotion">Promotion ID</label>
             <input
               id="filter-promotion"
               type="text"
-              placeholder="Promotion ID"
+              placeholder="e.g. PROMO_10"
               value={filters.promotion}
               onChange={(e) =>
                 setFilters((f) => ({ ...f, promotion: e.target.value }))
@@ -153,7 +157,7 @@ export default function RingListScreen() {
             />
           </div>
           <div className="filter-field">
-            <label htmlFor="filter-date-from">Date From</label>
+            <label htmlFor="filter-date-from">Created After</label>
             <input
               id="filter-date-from"
               type="date"
@@ -164,7 +168,7 @@ export default function RingListScreen() {
             />
           </div>
           <div className="filter-field">
-            <label htmlFor="filter-date-to">Date To</label>
+            <label htmlFor="filter-date-to">Created Before</label>
             <input
               id="filter-date-to"
               type="date"
@@ -191,7 +195,7 @@ export default function RingListScreen() {
           <table className="ring-table">
             <thead>
               <tr>
-                <th>Risk</th>
+                <th>Risk Level</th>
                 <th>Status</th>
                 <th>Ring ID</th>
                 <th>Members</th>
@@ -259,7 +263,7 @@ export default function RingListScreen() {
             <table className="ring-table">
               <thead>
                 <tr>
-                  <th>Risk</th>
+                  <th>Risk Level</th>
                   <th>Status</th>
                   <th>Ring ID</th>
                   <th>Members</th>
@@ -315,8 +319,8 @@ export default function RingListScreen() {
                         </span>
                       </td>
                       <td>
-                        <Link to={`/rings/${ring.ring_id}`} className="mono">
-                          {ring.ring_id}
+                        <Link to={`/rings/${ring.ring_id}`} className="mono ring-id-link">
+                          {ring.ring_id} <span className="ring-id-arrow" aria-hidden="true">→</span>
                         </Link>
                       </td>
                       <td className="mono">{ring.member_count}</td>
@@ -350,7 +354,7 @@ export default function RingListScreen() {
               Previous
             </button>
             <span className="pagination-info mono">
-              Page {data.page} of {totalPages}
+              Page {data.page} of {totalPages} ({data.total.toLocaleString()} rings)
             </span>
             <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
               Next

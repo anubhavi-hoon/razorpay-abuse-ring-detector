@@ -128,3 +128,222 @@ export function formatDateTime(iso: string): string {
     minute: '2-digit',
   });
 }
+
+/* ================================================================== */
+/*  Behavioral Feature Explorer Metadata                               */
+/* ================================================================== */
+
+export type FeatureCategory =
+  | 'lifecycle'
+  | 'activity'
+  | 'promotions'
+  | 'outcomes'
+  | 'shared_identity';
+
+export interface FeatureMeta {
+  key: string;
+  label: string;
+  description: string;
+  category: FeatureCategory;
+  isRatio?: boolean;
+  isSharedIdentity?: boolean;
+}
+
+export const FEATURE_CATEGORIES: { key: 'all' | FeatureCategory; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'lifecycle', label: 'Lifecycle' },
+  { key: 'activity', label: 'Activity' },
+  { key: 'promotions', label: 'Promotions' },
+  { key: 'outcomes', label: 'Outcomes' },
+  { key: 'shared_identity', label: 'Shared identity' },
+];
+
+export const BEHAVIORAL_FEATURES: Record<string, FeatureMeta> = {
+  // Account lifecycle
+  account_age_days: {
+    key: 'account_age_days',
+    label: 'Account age',
+    description: 'Days between account creation and the analysis cutoff.',
+    category: 'lifecycle',
+  },
+  time_to_first_promotion_hours: {
+    key: 'time_to_first_promotion_hours',
+    label: 'Time to first promotion',
+    description: 'Hours between signup and the first observed promotion claim.',
+    category: 'lifecycle',
+  },
+
+  // Transaction activity
+  transaction_count: {
+    key: 'transaction_count',
+    label: 'Transactions',
+    description: 'Number of transactions observed before the analysis cutoff.',
+    category: 'activity',
+  },
+  total_amount: {
+    key: 'total_amount',
+    label: 'Total transaction amount',
+    description: 'Combined value of all observed transactions.',
+    category: 'activity',
+  },
+  mean_amount: {
+    key: 'mean_amount',
+    label: 'Average transaction amount',
+    description: 'Average value of an observed transaction.',
+    category: 'activity',
+  },
+  distinct_merchant_count: {
+    key: 'distinct_merchant_count',
+    label: 'Distinct merchants',
+    description: 'Number of different merchants used by this account.',
+    category: 'activity',
+  },
+
+  // Promotion behavior
+  promotion_claim_count: {
+    key: 'promotion_claim_count',
+    label: 'Promotion claims',
+    description: 'Number of observed transactions that used a promotion.',
+    category: 'promotions',
+  },
+  promotion_claim_ratio: {
+    key: 'promotion_claim_ratio',
+    label: 'Promotion-use ratio',
+    description: 'Share of observed transactions that used a promotion.',
+    category: 'promotions',
+    isRatio: true,
+  },
+  distinct_promotion_count: {
+    key: 'distinct_promotion_count',
+    label: 'Distinct promotions',
+    description: 'Number of different promotions used by this account.',
+    category: 'promotions',
+  },
+  max_promotion_claims_1h: {
+    key: 'max_promotion_claims_1h',
+    label: 'Peak promotion claims per hour',
+    description: 'Highest number of promotion claims observed in any rolling one-hour window.',
+    category: 'promotions',
+  },
+
+  // Outcomes and velocity
+  failure_ratio: {
+    key: 'failure_ratio',
+    label: 'Failed transaction ratio',
+    description: 'Share of observed transactions that failed.',
+    category: 'outcomes',
+    isRatio: true,
+  },
+  refund_ratio: {
+    key: 'refund_ratio',
+    label: 'Refunded transaction ratio',
+    description: 'Share of observed transactions that were refunded.',
+    category: 'outcomes',
+    isRatio: true,
+  },
+  max_transactions_1h: {
+    key: 'max_transactions_1h',
+    label: 'Peak transactions per hour',
+    description: 'Highest number of transactions observed in any rolling one-hour window.',
+    category: 'outcomes',
+  },
+
+  // Shared identity signals
+  shared_device_accounts: {
+    key: 'shared_device_accounts',
+    label: 'Accounts sharing this device',
+    description: 'Other visible accounts using the same device.',
+    category: 'shared_identity',
+    isSharedIdentity: true,
+  },
+  shared_ip_accounts: {
+    key: 'shared_ip_accounts',
+    label: 'Accounts sharing this IP',
+    description: 'Other visible accounts using the same IP address.',
+    category: 'shared_identity',
+    isSharedIdentity: true,
+  },
+  shared_payment_instrument_accounts: {
+    key: 'shared_payment_instrument_accounts',
+    label: 'Accounts sharing this payment method',
+    description: 'Other visible accounts using the same payment instrument.',
+    category: 'shared_identity',
+    isSharedIdentity: true,
+  },
+  shared_email_accounts: {
+    key: 'shared_email_accounts',
+    label: 'Accounts sharing this email identifier',
+    description: 'Other visible accounts using the same email identifier.',
+    category: 'shared_identity',
+    isSharedIdentity: true,
+  },
+  shared_phone_accounts: {
+    key: 'shared_phone_accounts',
+    label: 'Accounts sharing this phone identifier',
+    description: 'Other visible accounts using the same phone identifier.',
+    category: 'shared_identity',
+    isSharedIdentity: true,
+  },
+};
+
+/**
+ * Returns metadata for a feature key, with safe fallback for unknown keys.
+ */
+export function getFeatureMeta(key: string): FeatureMeta {
+  if (key in BEHAVIORAL_FEATURES) {
+    return BEHAVIORAL_FEATURES[key];
+  }
+  const label = key
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return {
+    key,
+    label,
+    description: `Observed value for ${label.toLowerCase()}.`,
+    category: 'activity',
+    isRatio: key.toLowerCase().includes('ratio'),
+    isSharedIdentity: key.toLowerCase().includes('shared_'),
+  };
+}
+
+/**
+ * Formats a feature value with units and precision appropriate to its measurement.
+ */
+export function formatFeatureValue(key: string, value: number): string {
+  // Missing promotion representation
+  if (key === 'time_to_first_promotion_hours') {
+    if (value === -1) {
+      return 'No promotion observed';
+    }
+    return `${value.toFixed(2)} hours`;
+  }
+
+  // Account age in days
+  if (key === 'account_age_days') {
+    return `${value.toFixed(2)} days`;
+  }
+
+  // Ratios (0.0 - 1.0 -> 0.00% - 100.00%)
+  if (key.toLowerCase().includes('ratio')) {
+    return `${(value * 100).toFixed(2)}%`;
+  }
+
+  // Amounts (2 decimal places, no currency symbol)
+  if (key === 'total_amount' || key === 'mean_amount') {
+    return value.toFixed(2);
+  }
+
+  // Integer counts
+  if (
+    key.includes('count') ||
+    key.includes('accounts') ||
+    key.includes('_1h') ||
+    Number.isInteger(value)
+  ) {
+    return Math.round(value).toLocaleString();
+  }
+
+  // Fallback
+  return value.toFixed(2);
+}

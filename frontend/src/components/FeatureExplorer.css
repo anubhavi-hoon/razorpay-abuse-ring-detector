@@ -1,0 +1,288 @@
+/* ================================================================== */
+/*  Behavioral Feature Explorer                                        */
+/* ================================================================== */
+
+.feature-explorer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.feature-explorer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.feature-explorer-desc {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  max-width: 680px;
+}
+
+.feature-count-pill {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Category Filter Bar                                                */
+/* ------------------------------------------------------------------ */
+
+.feature-categories-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.feature-cat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  line-height: 1.2;
+}
+
+.feature-cat-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+  border-color: var(--border);
+}
+
+.feature-cat-btn--active {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.feature-cat-btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Feature Grid & Cards                                               */
+/* ------------------------------------------------------------------ */
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-3);
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.feature-card:hover {
+  border-color: var(--border);
+}
+
+.feature-card--shared {
+  background: color-mix(in srgb, var(--accent-blue-light) 30%, var(--bg-surface-alt));
+  border-color: color-mix(in srgb, var(--accent-blue) 25%, var(--border-light));
+}
+
+.feature-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.feature-card-label {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.feature-card-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.feature-shared-icon {
+  color: var(--accent-blue);
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Values & Ratio Bars                                                */
+/* ------------------------------------------------------------------ */
+
+.feature-card-value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: 2px;
+}
+
+.feature-card-value {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.feature-ratio-bar-wrap {
+  flex: 1;
+  max-width: 110px;
+  display: flex;
+  align-items: center;
+}
+
+.feature-ratio-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.feature-ratio-bar-fill {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 3px;
+  transform-origin: left;
+  transition: width 200ms ease;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Disclosure Button & Description                                    */
+/* ------------------------------------------------------------------ */
+
+.feature-disclosure-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  width: fit-content;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.feature-disclosure-btn:hover {
+  color: var(--accent-blue);
+}
+
+.feature-disclosure-btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 1px;
+}
+
+.feature-disclosure-chevron {
+  display: inline-block;
+  font-size: 0.75rem;
+  transition: transform 180ms ease;
+}
+
+.feature-disclosure-chevron--open {
+  transform: rotate(180deg);
+}
+
+.feature-card-description {
+  margin-top: 4px;
+  padding-top: var(--sp-2);
+  border-top: 1px dashed var(--border-light);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  animation: feature-desc-enter 180ms ease-out forwards;
+}
+
+@keyframes feature-desc-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature-card-description {
+    animation: none;
+    transform: none;
+  }
+  .feature-disclosure-chevron {
+    transition: none;
+  }
+  .feature-ratio-bar-fill {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Responsive Breakpoints                                             */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-explorer-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .feature-count-pill {
+    align-self: flex-start;
+  }
+}

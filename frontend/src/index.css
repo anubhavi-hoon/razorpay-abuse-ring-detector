@@ -3,52 +3,57 @@
 /* ================================================================== */
 
 :root {
-  /* Page & surface */
-  --bg-page: hsl(40, 15%, 96%);
-  --bg-surface: hsl(40, 10%, 100%);
-  --bg-surface-alt: hsl(40, 10%, 94%);
+  /* Page & surface — warm off-white, not stark white */
+  --bg-page: hsl(38, 20%, 97%);
+  --bg-surface: hsl(38, 18%, 100%);
+  --bg-surface-alt: hsl(38, 14%, 95%);
+  --bg-surface-hover: hsl(38, 14%, 93%);
 
-  /* Borders & dividers */
-  --border: hsl(40, 8%, 82%);
-  --border-light: hsl(40, 8%, 90%);
+  /* Borders & dividers — light, unobtrusive */
+  --border: hsl(38, 10%, 86%);
+  --border-light: hsl(38, 10%, 92%);
 
-  /* Typography */
-  --text-primary: hsl(220, 15%, 16%);
-  --text-secondary: hsl(220, 10%, 45%);
-  --text-muted: hsl(220, 8%, 62%);
+  /* Typography — dark charcoal, not pure black */
+  --text-primary: hsl(222, 16%, 18%);
+  --text-secondary: hsl(222, 10%, 48%);
+  --text-muted: hsl(222, 8%, 64%);
 
-  /* Accent — restrained operational blue */
-  --accent-blue: hsl(215, 65%, 48%);
-  --accent-blue-hover: hsl(215, 65%, 40%);
-  --accent-blue-light: hsl(215, 60%, 94%);
+  /* Accent — desaturated, calm operational blue */
+  --accent-blue: hsl(213, 55%, 44%);
+  --accent-blue-hover: hsl(213, 55%, 36%);
+  --accent-blue-light: hsl(213, 55%, 95%);
 
-  /* Status colors — semantic only */
-  --status-new: hsl(215, 65%, 48%);
-  --status-reviewing: hsl(38, 85%, 50%);
-  --status-confirmed: hsl(0, 70%, 50%);
-  --status-dismissed: hsl(220, 8%, 62%);
+  /* Status colors — semantic, muted not saturated */
+  --status-new: hsl(213, 55%, 44%);
+  --status-reviewing: hsl(36, 70%, 44%);
+  --status-confirmed: hsl(4, 58%, 44%);
+  --status-dismissed: hsl(222, 8%, 58%);
 
-  /* Score severity */
-  --score-low: hsl(220, 10%, 55%);
-  --score-medium: hsl(38, 85%, 50%);
-  --score-high: hsl(0, 70%, 50%);
+  /* Score severity — desaturated, not alarm-level */
+  --score-low: hsl(158, 32%, 38%);       /* calm muted green */
+  --score-medium: hsl(36, 70%, 44%);     /* muted amber */
+  --score-high: hsl(4, 58%, 44%);        /* muted coral-red */
 
-  /* Spacing scale (4px base) */
+  /* Spacing scale (8px base, 4px fine) */
   --sp-1: 4px;
   --sp-2: 8px;
   --sp-3: 12px;
   --sp-4: 16px;
   --sp-5: 20px;
   --sp-6: 24px;
+  --sp-7: 28px;
   --sp-8: 32px;
   --sp-10: 40px;
   --sp-12: 48px;
 
-  /* Radius */
-  --radius: 4px;
+  /* Radius scale */
+  --radius-sm: 4px;      /* small elements: badges, pills, inputs */
+  --radius: 8px;         /* cards, panels, buttons */
+  --radius-lg: 12px;     /* large panels */
 
-  /* Shadow — single subtle elevation */
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  /* Shadow — soft, low-opacity */
+  --shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.04);
 
   /* Font stacks */
   --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
@@ -72,6 +77,12 @@ html {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -115,18 +126,18 @@ a:hover {
 .panel {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: var(--sp-6);
+  padding: var(--sp-6) var(--sp-7);
 }
 
 .panel-header {
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  margin-bottom: var(--sp-4);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-5);
 }
 
 /* ================================================================== */
@@ -142,22 +153,28 @@ table {
 th {
   text-align: left;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  padding: var(--sp-2) var(--sp-3);
-  border-bottom: 2px solid var(--border);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: var(--sp-2) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 td {
-  padding: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
   border-bottom: 1px solid var(--border-light);
-  vertical-align: top;
+  vertical-align: middle;
+  line-height: 1.4;
 }
 
 tbody tr:nth-child(even) {
   background: var(--bg-surface-alt);
+}
+
+tbody tr:hover {
+  background: var(--bg-surface-hover);
 }
 
 /* ================================================================== */
@@ -178,6 +195,7 @@ button,
   background: var(--bg-surface);
   color: var(--text-primary);
   cursor: pointer;
+  line-height: 1.4;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -185,18 +203,19 @@ button,
   .btn {
     transition:
       background-color 150ms ease,
-      border-color 150ms ease;
+      border-color 150ms ease,
+      color 150ms ease;
   }
 }
 
 button:hover,
 .btn:hover {
-  background: var(--bg-surface-alt);
+  background: var(--bg-surface-hover);
   border-color: var(--text-muted);
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -217,32 +236,33 @@ button:disabled {
 
 .status-badge {
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   padding: 2px var(--sp-2);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
 }
 
 .status-new {
-  color: var(--status-new);
-  background: hsl(215, 60%, 94%);
+  color: hsl(213, 55%, 36%);
+  background: hsl(213, 55%, 94%);
 }
 
 .status-reviewing {
-  color: hsl(38, 85%, 30%);
-  background: hsl(38, 80%, 92%);
+  color: hsl(36, 70%, 34%);
+  background: hsl(36, 70%, 93%);
 }
 
 .status-confirmed {
-  color: hsl(0, 70%, 35%);
-  background: hsl(0, 60%, 94%);
+  color: hsl(4, 58%, 36%);
+  background: hsl(4, 58%, 94%);
 }
 
 .status-dismissed {
-  color: var(--text-muted);
-  background: var(--bg-surface-alt);
+  color: hsl(222, 8%, 50%);
+  background: hsl(222, 8%, 94%);
 }
 
 /* ================================================================== */
@@ -303,7 +323,7 @@ select {
   font-size: 0.85rem;
   padding: var(--sp-2) var(--sp-3);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--bg-surface);
   color: var(--text-primary);
 }
@@ -335,10 +355,10 @@ label {
 }
 
 .inline-error {
-  color: var(--status-confirmed);
-  border-left: 3px solid var(--status-confirmed);
+  color: hsl(4, 58%, 36%);
+  border-left: 3px solid hsl(4, 58%, 60%);
   padding: var(--sp-3) var(--sp-4);
-  background: hsl(0, 60%, 97%);
+  background: hsl(4, 58%, 97%);
   border-radius: var(--radius);
   font-size: 0.9rem;
 }
@@ -351,14 +371,15 @@ label {
 
 .reason-pill {
   display: inline-block;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 500;
   padding: 2px var(--sp-2);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   color: var(--text-secondary);
   background: var(--bg-surface-alt);
   white-space: nowrap;
+  line-height: 1.6;
 }
 
 /* ================================================================== */
