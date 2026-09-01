@@ -58,6 +58,16 @@ class SyntheticDataTest(unittest.TestCase):
         planted = {account["ring_label"] for account in accounts if account["label"] == "1"}
         self.assertEqual(planted, {f"ring_{index:03d}" for index in range(1, 5)})
         self.assertTrue(all(account["ring_label"] == "" for account in accounts if account["label"] == "0"))
+        evasive = [account for account in accounts if account["ring_label"] == "ring_003"]
+        self.assertGreater(len({account["device_id"] for account in evasive}), 1)
+        self.assertGreater(len({account["payment_instrument_id"] for account in evasive}), 1)
+        benign_shared = accounts[20:25]
+        self.assertGreater(len({account["device_id"] for account in benign_shared}), 1)
+        self.assertGreater(len({account["payment_instrument_id"] for account in benign_shared}), 1)
+        self.assertGreater(len({account["ip_address"] for account in benign_shared}), 1)
+        self.assertEqual({account["label"] for account in benign_shared}, {"0"})
+        self.assertEqual(manifest["evasive_ring_count"], 1)
+        self.assertEqual(manifest["benign_shared_group_count"], 4)
         self.assertEqual(manifest["ground_truth_fields"], ["label", "ring_label"])
         self.assertEqual(json.loads((self.root / "dataset" / "manifest.json").read_text()), manifest)
 

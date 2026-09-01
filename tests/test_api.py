@@ -45,7 +45,7 @@ class ApiTest(unittest.TestCase):
 
                 rings = client.get("/api/v1/rings", params={"page_size": 2})
                 self.assertEqual(rings.status_code, 200)
-                self.assertEqual(len(rings.json()["items"]), 2)
+                self.assertEqual(len(rings.json()["items"]), min(2, rings.json()["total"]))
                 ring = rings.json()["items"][0]
                 scored = client.get("/api/v1/rings", params={"min_score": 0.5})
                 self.assertTrue(all(item["score"] >= 0.5 for item in scored.json()["items"]))

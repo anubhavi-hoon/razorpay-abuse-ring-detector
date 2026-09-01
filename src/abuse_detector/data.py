@@ -203,34 +203,63 @@ def generate_dataset(
 
     rng = random.Random(seed)
     fraud_count = ring_count * RING_SIZE
+    legitimate_count = account_count - fraud_count
+    benign_shared_group_count = min(ring_count, legitimate_count // RING_SIZE)
     accounts: list[Account] = []
 
     for index in range(account_count):
         is_fraud = index < fraud_count
         if is_fraud:
             ring_index = index // RING_SIZE
-            created = ANCHOR + timedelta(days=ring_index * 2, minutes=rng.randrange(180))
+            member_index = index % RING_SIZE
+            evasive = ring_index % 3 == 2
+            created = ANCHOR + timedelta(
+                days=ring_index * 4,
+                minutes=rng.randrange(5 * 24 * 60 if evasive else 180),
+            )
             ring_label = f"ring_{ring_index + 1:03d}"
-            device_id = f"device_ring_{ring_index + 1:03d}"
-            payment_id = f"payment_ring_{ring_index + 1:03d}"
-            ip_address = f"198.51.100.{ring_index % 250 + 1}"
+            if evasive:
+                device_id = f"device_ring_{ring_index + 1:03d}_{'a' if member_index < 3 else 'b'}"
+                payment_id = (
+                    f"payment_ring_{ring_index + 1:03d}_{'a' if member_index in {0, 3, 4} else 'b'}"
+                )
+                ip_address = f"198.51.{ring_index % 250}.{member_index // 2 + 1}"
+            else:
+                device_id = f"device_ring_{ring_index + 1:03d}"
+                payment_id = f"payment_ring_{ring_index + 1:03d}"
+                ip_address = f"198.51.100.{ring_index % 250 + 1}"
         else:
             legitimate_index = index - fraud_count
-            created = ANCHOR + timedelta(days=rng.randrange(90), seconds=rng.randrange(86_400))
             ring_label = ""
-            # Some legitimate accounts share household devices/payments and office IPs.
-            household = legitimate_index // 2
-            device_id = (
-                f"device_household_{household:05d}"
-                if legitimate_index % 10 < 2
-                else f"device_{index:06d}"
-            )
-            payment_id = (
-                f"payment_household_{household:05d}"
-                if legitimate_index % 20 < 2
-                else f"payment_{index:06d}"
-            )
-            ip_address = f"203.0.113.{legitimate_index % 80 + 1}"
+            if legitimate_index < benign_shared_group_count * RING_SIZE:
+                group_index = legitimate_index // RING_SIZE
+                member_index = legitimate_index % RING_SIZE
+                created = ANCHOR + timedelta(
+                    days=(group_index * 13 + 5) % 85,
+                    minutes=rng.randrange(18 * 60),
+                )
+                device_id = (
+                    f"device_benign_{group_index + 1:03d}_{'a' if member_index < 3 else 'b'}"
+                )
+                payment_id = (
+                    f"payment_benign_{group_index + 1:03d}_{'a' if member_index in {0, 3, 4} else 'b'}"
+                )
+                ip_address = f"192.0.{group_index % 250}.{member_index // 2 + 1}"
+            else:
+                created = ANCHOR + timedelta(days=rng.randrange(90), seconds=rng.randrange(86_400))
+                # Some legitimate accounts share household devices/payments and office IPs.
+                household = legitimate_index // 2
+                device_id = (
+                    f"device_household_{household:05d}"
+                    if legitimate_index % 10 < 2
+                    else f"device_{index:06d}"
+                )
+                payment_id = (
+                    f"payment_household_{household:05d}"
+                    if legitimate_index % 20 < 2
+                    else f"payment_{index:06d}"
+                )
+                ip_address = f"203.0.113.{legitimate_index % 80 + 1}"
 
         accounts.append(
             Account(
@@ -252,18 +281,60 @@ def generate_dataset(
         account_created = datetime.fromisoformat(account.created_at.replace("Z", "+00:00"))
         if account.label:
             ring_number = int(account.ring_label.removeprefix("ring_"))
-            created = account_created + timedelta(minutes=rng.randrange(30, 2_880))
-            promotion_id = f"promo_{ring_number % 4 + 1:02d}" if rng.random() < 0.88 else ""
-            merchant_id = f"merchant_{ring_number % 8 + 1:03d}"
-            status = _weighted_choice(rng, (("succeeded", 55), ("failed", 25), ("refunded", 20)))
-            threshold = rng.choice((99, 199, 499))
-            amount = threshold + rng.randrange(0, 10)
+            evasive = (ring_number - 1) % 3 == 2
+            created = account_created + timedelta(minutes=rng.randrange(30, 4_320 if evasive else 2_880))
+            promotion_id = (
+                f"promo_{ring_number % 4 + 1:02d}"
+                if rng.random() < (0.45 if evasive else 0.88)
+                else ""
+            )
+            merchant_id = (
+                f"merchant_{ring_number % 8 + 1:03d}"
+                if not evasive or rng.random() < 0.55
+                else f"merchant_{rng.randrange(1, 101):03d}"
+            )
+            status = _weighted_choice(
+                rng,
+                (("succeeded", 82), ("failed", 12), ("refunded", 6))
+                if evasive
+                else (("succeeded", 55), ("failed", 25), ("refunded", 20)),
+            )
+            if not evasive or rng.random() < 0.45:
+                threshold = rng.choice((99, 199, 499))
+                amount = threshold + rng.randrange(0, 10)
+            else:
+                amount = rng.randrange(100, 50_001) / 100
         else:
             created = account_created + timedelta(minutes=rng.randrange(30, 86_400))
-            promotion_id = f"promo_{rng.randrange(1, 13):02d}" if rng.random() < 0.18 else ""
-            merchant_id = f"merchant_{rng.randrange(1, 101):03d}"
-            status = _weighted_choice(rng, (("succeeded", 92), ("failed", 5), ("refunded", 3)))
-            amount = rng.randrange(100, 50_001) / 100
+            legitimate_index = int(account.account_id.removeprefix("acct_")) - 1 - fraud_count
+            benign_group = (
+                legitimate_index // RING_SIZE
+                if 0 <= legitimate_index < benign_shared_group_count * RING_SIZE
+                else None
+            )
+            promotion_id = (
+                f"promo_benign_{benign_group + 1:02d}"
+                if benign_group is not None and rng.random() < 0.5
+                else f"promo_{rng.randrange(1, 13):02d}"
+                if rng.random() < 0.18
+                else ""
+            )
+            merchant_id = (
+                f"merchant_benign_{benign_group + 1:03d}"
+                if benign_group is not None and rng.random() < 0.55
+                else f"merchant_{rng.randrange(1, 101):03d}"
+            )
+            status = _weighted_choice(
+                rng,
+                (("succeeded", 78), ("failed", 14), ("refunded", 8))
+                if benign_group is not None
+                else (("succeeded", 92), ("failed", 5), ("refunded", 3)),
+            )
+            if benign_group is not None and rng.random() < 0.5:
+                threshold = rng.choice((99, 199, 499))
+                amount = threshold + rng.randrange(0, 10)
+            else:
+                amount = rng.randrange(100, 50_001) / 100
 
         transactions.append(
             Transaction(
@@ -287,6 +358,8 @@ def generate_dataset(
         "transaction_count": transaction_count,
         "ring_count": ring_count,
         "ring_size": RING_SIZE,
+        "evasive_ring_count": sum(index % 3 == 2 for index in range(ring_count)),
+        "benign_shared_group_count": benign_shared_group_count,
         "ground_truth_fields": list(GROUND_TRUTH_FIELDS),
     }
     (output_dir / "manifest.json").write_text(
