@@ -59,6 +59,10 @@ class DatabaseTest(unittest.TestCase):
 
             skipped = load_pipeline_run(root / "missing", engine, if_empty=True)
             self.assertEqual(skipped, {"run_id": "small", "skipped": True})
+            skipped = load_pipeline_run(root / "missing/small", engine, if_missing=True)
+            self.assertEqual(skipped, {"run_id": "small", "skipped": True})
+            with self.assertRaises(ValueError):
+                load_pipeline_run(run_dir, engine, if_empty=True, if_missing=True)
 
             second = load_pipeline_run(run_dir, engine)
             self.assertTrue(second["replaced"])
@@ -101,6 +105,21 @@ class DatabaseTest(unittest.TestCase):
             with Session(engine) as session:
                 self.assertEqual(session.scalar(select(func.count()).select_from(DetectionRun)), 1)
                 self.assertEqual(session.get(Ring, ("small", ring_id)).status, "confirmed")
+
+            run_pipeline(
+                root / "runs",
+                "next",
+                seed=24,
+                account_count=60,
+                transaction_count=180,
+                ring_count=4,
+            )
+            loaded = load_pipeline_run(root / "runs/next", engine, if_missing=True)
+            self.assertFalse(loaded["skipped"])
+            self.assertEqual(
+                load_pipeline_run(root / "missing/next", engine, if_missing=True),
+                {"run_id": "next", "skipped": True},
+            )
 
 
 if __name__ == "__main__":

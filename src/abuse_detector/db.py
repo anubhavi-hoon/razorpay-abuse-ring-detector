@@ -228,11 +228,17 @@ def load_pipeline_run(
     engine: Engine | None = None,
     *,
     if_empty: bool = False,
+    if_missing: bool = False,
 ) -> dict[str, object]:
+    if if_empty and if_missing:
+        raise ValueError("if_empty and if_missing are mutually exclusive")
     engine = engine or create_database_engine()
-    if if_empty:
+    if if_empty or if_missing:
         with Session(engine) as session:
-            existing_run_id = session.scalar(select(DetectionRun.run_id).limit(1))
+            query = select(DetectionRun.run_id)
+            if if_missing:
+                query = query.where(DetectionRun.run_id == run_dir.name)
+            existing_run_id = session.scalar(query.limit(1))
         if existing_run_id is not None:
             return {"run_id": existing_run_id, "skipped": True}
 
@@ -463,16 +469,23 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run_dir", type=Path)
     parser.add_argument("--database-url")
-    parser.add_argument(
+    skip = parser.add_mutually_exclusive_group()
+    skip.add_argument(
         "--if-empty",
         action="store_true",
         help="skip loading when the database already contains a detection run",
+    )
+    skip.add_argument(
+        "--if-missing",
+        action="store_true",
+        help="skip loading when this run ID already exists",
     )
     args = parser.parse_args(argv)
     result = load_pipeline_run(
         args.run_dir,
         create_database_engine(args.database_url),
         if_empty=args.if_empty,
+        if_missing=args.if_missing,
     )
     print(json.dumps(result, sort_keys=True))
 
