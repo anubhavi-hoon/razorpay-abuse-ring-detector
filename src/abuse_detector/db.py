@@ -223,9 +223,20 @@ def create_database_engine(database_url: str | None = None) -> Engine:
     return engine
 
 
-def load_pipeline_run(run_dir: Path, engine: Engine | None = None) -> dict[str, object]:
-    bundle = _read_run(run_dir)
+def load_pipeline_run(
+    run_dir: Path,
+    engine: Engine | None = None,
+    *,
+    if_empty: bool = False,
+) -> dict[str, object]:
     engine = engine or create_database_engine()
+    if if_empty:
+        with Session(engine) as session:
+            existing_run_id = session.scalar(select(DetectionRun.run_id).limit(1))
+        if existing_run_id is not None:
+            return {"run_id": existing_run_id, "skipped": True}
+
+    bundle = _read_run(run_dir)
     report = bundle["report"]
     run_id = report["run_id"]
 
@@ -264,7 +275,12 @@ def load_pipeline_run(run_dir: Path, engine: Engine | None = None) -> dict[str, 
         session.execute(insert(RingMember), bundle["members"])
         session.execute(insert(Relationship), bundle["relationships"])
 
-    return {"run_id": run_id, "replaced": existing is not None, "counts": report["counts"]}
+    return {
+        "run_id": run_id,
+        "replaced": existing is not None,
+        "skipped": False,
+        "counts": report["counts"],
+    }
 
 
 def _read_run(run_dir: Path) -> dict[str, Any]:
@@ -447,8 +463,17 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("run_dir", type=Path)
     parser.add_argument("--database-url")
+    parser.add_argument(
+        "--if-empty",
+        action="store_true",
+        help="skip loading when the database already contains a detection run",
+    )
     args = parser.parse_args(argv)
-    result = load_pipeline_run(args.run_dir, create_database_engine(args.database_url))
+    result = load_pipeline_run(
+        args.run_dir,
+        create_database_engine(args.database_url),
+        if_empty=args.if_empty,
+    )
     print(json.dumps(result, sort_keys=True))
 
 

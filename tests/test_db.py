@@ -57,6 +57,9 @@ class DatabaseTest(unittest.TestCase):
                 ring.status = "confirmed"
                 session.commit()
 
+            skipped = load_pipeline_run(root / "missing", engine, if_empty=True)
+            self.assertEqual(skipped, {"run_id": "small", "skipped": True})
+
             second = load_pipeline_run(run_dir, engine)
             self.assertTrue(second["replaced"])
             with Session(engine) as session:
