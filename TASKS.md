@@ -175,6 +175,22 @@ Acceptance:
 - [ ] No secrets, real personal data, or machine-specific paths are committed.
 - [ ] Deployment uses one API service and one small database at most.
 
+## Milestone 10 — Detection resilience
+
+Deliverables:
+
+- [x] Compute the exact minimum accepted-entity loss needed to fragment review-sized rings below the 50% membership threshold.
+- [x] Derive critical entity types across all minimum cuts without changing risk scoring or ranking.
+- [x] Persist the result and expose it on ring detail through the frozen API contract.
+- [x] Present analyst-safe resilience wording on ring detail.
+- [x] Cover graph logic, persistence, API output, and frontend compilation with focused checks.
+
+Acceptance:
+
+- [x] Resilience is visibly separate from risk and review status.
+- [x] Broad components outside the exact-search bound are honestly reported as unavailable.
+- [x] No new runtime dependency, simulator, enforcement action, or attacker instruction is added.
+
 ## Deferred until evidence requires them
 
 - streaming ingestion or online scoring;

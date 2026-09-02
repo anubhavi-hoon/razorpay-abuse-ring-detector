@@ -66,7 +66,7 @@ The command keeps each planted ring entirely in train or test data, fits a class
 detect-abuse-rings --accounts data/raw/accounts.csv --transactions data/raw/transactions.csv --scores artifacts/account_scores.csv --output-dir data/processed/rings
 ```
 
-The command suppresses overly common entities, finds non-singleton connected components, and writes ranked rings, memberships, graph nodes/edges, and ring evaluation. The normalized ring score weights mean/max ML score (35%/15%), shared-entity strength (15%), account-link density (10%), promotion concentration (10%), and signup-time concentration (15%); it is a ranking score, not a probability. Override a noise limit with `--max-entity-accounts TYPE=COUNT`.
+The command suppresses overly common entities, finds non-singleton connected components, and writes ranked rings, memberships, graph nodes/edges, and ring evaluation. It also computes a separate detection-resilience result: the minimum accepted shared-evidence loss needed to leave fewer than half the ring connected as one case. This result does not affect detection or ranking; unusually broad components are left unassessed rather than approximated. The normalized ring score weights mean/max ML score (35%/15%), shared-entity strength (15%), account-link density (10%), promotion concentration (10%), and signup-time concentration (15%); it is a ranking score, not a probability. Override a noise limit with `--max-entity-accounts TYPE=COUNT`.
 
 ## Load a run into the database
 

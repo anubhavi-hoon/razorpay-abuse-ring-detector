@@ -4,8 +4,8 @@ services:
     runtime: python
     plan: free
     region: singapore
-    buildCommand: python -m pip install -e '.[postgres]' && run-abuse-pipeline --output-root runs --run-id demo-realism-v2
-    startCommand: export DATABASE_URL="${DATABASE_URL/postgresql:/postgresql+psycopg:}" && alembic upgrade head && load-detection-run runs/demo-realism-v2 --if-missing && uvicorn abuse_detector.api:app --host 0.0.0.0 --port $PORT
+    buildCommand: python -m pip install -e '.[postgres]' && run-abuse-pipeline --output-root runs --run-id demo-resilience-v3
+    startCommand: export DATABASE_URL="${DATABASE_URL/postgresql:/postgresql+psycopg:}" && alembic upgrade head && load-detection-run runs/demo-resilience-v3 --if-missing && uvicorn abuse_detector.api:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/v1/health
     envVars:
       - key: DATABASE_URL
@@ -15,7 +15,7 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://anubhavi-razorpay-abuse.onrender.com
       - key: MODEL_ARTIFACT
-        value: runs/demo-realism-v2/artifacts/model.pkl
+        value: runs/demo-resilience-v3/artifacts/model.pkl
 
   - type: web
     name: anubhavi-razorpay-abuse

@@ -1,7 +1,7 @@
 import unittest
 
 from abuse_detector.data import Account, Transaction
-from abuse_detector.graph import DEFAULT_MAX_ENTITY_ACCOUNTS, detect_rings
+from abuse_detector.graph import DEFAULT_MAX_ENTITY_ACCOUNTS, detect_rings, detection_resilience
 
 
 def account(account_id, *, device, ip, payment, created_at, ring_label=""):
@@ -82,8 +82,26 @@ class GraphTest(unittest.TestCase):
         self.assertNotIn("common_ip", {node["label"] for node in result["nodes"]})
         self.assertEqual(result["evaluation"]["top20_ring_recall"], 1.0)
         self.assertEqual(result["evaluation"]["largest_component"], 2)
+        self.assertEqual(ring["detection_resilience"], "moderate")
+        self.assertEqual(ring["min_entity_removals"], 3)
+        self.assertEqual(
+            ring["critical_entity_types"], "device;payment_instrument;promotion"
+        )
+
+    def test_resilience_uses_all_minimum_cuts_for_critical_types(self):
+        members = ("a", "b", "c", "d", "e")
+        shared_entities = [
+            (("device", "d1"), ["a", "b"]),
+            (("device", "d2"), ["b", "c"]),
+            (("payment_instrument", "p1"), ["c", "d"]),
+            (("payment_instrument", "p2"), ["d", "e"]),
+        ]
+
+        self.assertEqual(
+            detection_resilience(members, shared_entities),
+            ("moderate", 2, ["device", "payment_instrument"]),
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-

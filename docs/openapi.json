@@ -283,9 +283,32 @@
             "title": "Created At",
             "type": "string"
           },
+          "critical_entity_types": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Critical Entity Types",
+            "type": "array"
+          },
           "density": {
             "title": "Density",
             "type": "number"
+          },
+          "detection_resilience": {
+            "anyOf": [
+              {
+                "enum": [
+                  "low",
+                  "moderate",
+                  "high"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detection Resilience"
           },
           "edges": {
             "items": {
@@ -319,6 +342,17 @@
             },
             "title": "Members",
             "type": "array"
+          },
+          "min_entity_removals": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Entity Removals"
           },
           "nodes": {
             "items": {
@@ -394,6 +428,9 @@
           "mean_ml_score",
           "max_ml_score",
           "temporal_concentration",
+          "detection_resilience",
+          "min_entity_removals",
+          "critical_entity_types",
           "members",
           "shared_entities",
           "nodes",

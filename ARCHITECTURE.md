@@ -91,7 +91,7 @@ This is a target layout, not permission to scaffold every path upfront. Each mil
 3. The feature builder produces one row per account at an observation cutoff.
 4. The training job splits by planted ring group, fits the pipeline, reports metrics, and saves the artifact.
 5. The scorer emits account scores and deterministic reason codes.
-6. Graph analysis builds relationships, filters noisy entities, finds components, and scores rings.
+6. Graph analysis builds relationships, filters noisy entities, finds components, scores rings, and computes exact detection resilience for review-sized components.
 7. The loader transactionally replaces or upserts one run's derived results.
 8. FastAPI reads results and updates review status.
 9. Antigravity renders the API payloads; it does not reproduce risk logic.
@@ -110,7 +110,7 @@ Store flexible feature/reason details as JSON where querying individual values i
 
 ## 7. Scoring boundaries
 
-`features.py` is the single source of feature definitions for training and inference. `model.py` owns only model fitting and account scoring. `graph.py` owns relationship filtering, components, and ring scoring. `pipeline.py` coordinates these steps without duplicating their logic.
+`features.py` is the single source of feature definitions for training and inference. `model.py` owns only model fitting and account scoring. `graph.py` owns relationship filtering, components, ring scoring, and the separate entity-loss resilience analysis. `pipeline.py` coordinates these steps without duplicating their logic.
 
 Reason codes are deterministic mappings such as `SHARED_PAYMENT_INSTRUMENT`, `RAPID_PROMO_CLAIMS`, and `HIGH_REFUND_RATIO`. API text labels may map from these codes, but risk decisions must not depend on frontend wording.
 
@@ -126,6 +126,9 @@ The OpenAPI schema is the contract. Ring detail returns graph-ready data directl
   "score": 0.91,
   "status": "new",
   "reason_codes": ["SHARED_DEVICE", "RAPID_PROMO_CLAIMS"],
+  "detection_resilience": "moderate",
+  "min_entity_removals": 3,
+  "critical_entity_types": ["device", "payment_instrument"],
   "members": [{"account_id": "acct_1", "ml_score": 0.88}],
   "nodes": [{"id": "acct_1", "type": "account", "label": "acct_1"}],
   "edges": [{"source": "acct_1", "target": "device_7", "type": "device"}]

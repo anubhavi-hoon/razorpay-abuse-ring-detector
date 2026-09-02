@@ -136,6 +136,14 @@ class Ring(Base):
         CheckConstraint("score BETWEEN 0 AND 1", name="ck_rings_score"),
         CheckConstraint("member_count >= 2", name="ck_rings_member_count"),
         CheckConstraint(
+            "detection_resilience IS NULL OR detection_resilience IN ('low', 'moderate', 'high')",
+            name="ck_rings_detection_resilience",
+        ),
+        CheckConstraint(
+            "min_entity_removals IS NULL OR min_entity_removals >= 1",
+            name="ck_rings_min_entity_removals",
+        ),
+        CheckConstraint(
             "density BETWEEN 0 AND 1 AND promotion_concentration BETWEEN 0 AND 1 "
             "AND mean_ml_score BETWEEN 0 AND 1 AND max_ml_score BETWEEN 0 AND 1 "
             "AND temporal_concentration BETWEEN 0 AND 1",
@@ -156,6 +164,9 @@ class Ring(Base):
     max_ml_score: Mapped[float] = mapped_column(Float)
     temporal_concentration: Mapped[float] = mapped_column(Float)
     reason_codes: Mapped[list[str]] = mapped_column(JSON)
+    detection_resilience: Mapped[str | None] = mapped_column(String(16))
+    min_entity_removals: Mapped[int | None] = mapped_column(Integer)
+    critical_entity_types: Mapped[list[str] | None] = mapped_column(JSON)
 
 
 class RingMember(Base):
@@ -402,6 +413,13 @@ def _read_run(run_dir: Path) -> dict[str, Any]:
                     row["temporal_concentration"], f"{row['ring_id']} temporal_concentration"
                 ),
                 "reason_codes": _split_codes(row["reason_codes"]),
+                "detection_resilience": row["detection_resilience"] or None,
+                "min_entity_removals": (
+                    int(row["min_entity_removals"])
+                    if row["min_entity_removals"]
+                    else None
+                ),
+                "critical_entity_types": _split_codes(row["critical_entity_types"]),
             }
             for row in ring_rows
         ],

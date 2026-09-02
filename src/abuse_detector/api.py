@@ -119,6 +119,9 @@ class RingDetail(RingItem):
     mean_ml_score: float
     max_ml_score: float
     temporal_concentration: float
+    detection_resilience: Literal["low", "moderate", "high"] | None
+    min_entity_removals: int | None
+    critical_entity_types: list[str]
     members: list[RingMemberOut]
     shared_entities: list[SharedEntity]
     nodes: list[GraphNode]
@@ -358,6 +361,9 @@ def create_app(
             "mean_ml_score": ring.mean_ml_score,
             "max_ml_score": ring.max_ml_score,
             "temporal_concentration": ring.temporal_concentration,
+            "detection_resilience": ring.detection_resilience,
+            "min_entity_removals": ring.min_entity_removals,
+            "critical_entity_types": ring.critical_entity_types or [],
             "members": [
                 {
                     "account_id": member.account_id,

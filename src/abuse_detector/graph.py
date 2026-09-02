@@ -45,6 +45,9 @@ RING_FIELDS = (
     "max_ml_score",
     "temporal_concentration",
     "reason_codes",
+    "detection_resilience",
+    "min_entity_removals",
+    "critical_entity_types",
 )
 
 
@@ -161,6 +164,9 @@ def detect_rings(
         ring_score = sum(signals[name] * weight for name, weight in RING_SCORE_WEIGHTS.items())
         entity_types = sorted({key[0] for key, _ in shared_entities})
         reasons = ring_reason_codes(signals, entity_types)
+        resilience, min_removals, critical_types = detection_resilience(
+            members, shared_entities
+        )
         rings.append(
             {
                 "ring_id": ring_id,
@@ -174,6 +180,9 @@ def detect_rings(
                 "max_ml_score": round(signals["max_ml_score"], 8),
                 "temporal_concentration": round(temporal_concentration, 6),
                 "reason_codes": ";".join(reasons),
+                "detection_resilience": resilience,
+                "min_entity_removals": min_removals,
+                "critical_entity_types": ";".join(critical_types),
             }
         )
         for account_id in members:
@@ -212,6 +221,39 @@ def detect_rings(
     evaluation["score_weights"] = RING_SCORE_WEIGHTS
     evaluation["largest_component"] = max((len(members) for members in components), default=0)
     return {"rings": rings, "members": members_out, "nodes": nodes, "edges": edges, "evaluation": evaluation}
+
+
+def detection_resilience(
+    members: tuple[str, ...],
+    shared_entities: list[tuple[tuple[str, str], list[str]]],
+) -> tuple[str | None, int | None, list[str]]:
+    """Find the smallest shared-evidence loss that fragments a detected ring."""
+    # ponytail: balanced node cuts are exponential; keep the exact result for
+    # normal review-sized rings and leave unusually broad components unassessed.
+    if len(shared_entities) > 12:
+        return None, None, []
+    largest_allowed = max(1, (len(members) - 1) // 2)
+    minimum_cuts: list[tuple[int, ...]] = []
+    for removal_count in range(1, len(shared_entities) + 1):
+        for removed in combinations(range(len(shared_entities)), removal_count):
+            residual = nx.Graph()
+            residual.add_nodes_from(members)
+            for index, (_, entity_members) in enumerate(shared_entities):
+                if index not in removed:
+                    residual.add_edges_from(combinations(entity_members, 2))
+            if max(map(len, nx.connected_components(residual)), default=0) <= largest_allowed:
+                minimum_cuts.append(removed)
+        if minimum_cuts:
+            break
+
+    critical_types = set.intersection(
+        *(
+            {shared_entities[index][0][0] for index in cut}
+            for cut in minimum_cuts
+        )
+    )
+    level = "low" if removal_count == 1 else "moderate" if removal_count <= 3 else "high"
+    return level, removal_count, sorted(critical_types)
 
 
 def ring_reason_codes(signals: dict[str, float], entity_types: list[str]) -> list[str]:
@@ -338,4 +380,3 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -71,6 +71,9 @@ export interface RingDetail {
   mean_ml_score: number;
   max_ml_score: number;
   temporal_concentration: number;
+  detection_resilience: 'low' | 'moderate' | 'high' | null;
+  min_entity_removals: number | null;
+  critical_entity_types: string[];
   members: RingMemberOut[];
   shared_entities: SharedEntity[];
   nodes: GraphNode[];

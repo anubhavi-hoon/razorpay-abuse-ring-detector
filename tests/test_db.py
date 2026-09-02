@@ -54,6 +54,9 @@ class DatabaseTest(unittest.TestCase):
                 self.assertGreater(session.scalar(select(func.count()).select_from(Relationship)), 0)
                 ring = session.scalars(select(Ring).order_by(Ring.ring_id)).first()
                 ring_id = ring.ring_id
+                self.assertIsNone(ring.detection_resilience)
+                self.assertIsNone(ring.min_entity_removals)
+                self.assertIsInstance(ring.critical_entity_types, list)
                 ring.status = "confirmed"
                 session.commit()
 

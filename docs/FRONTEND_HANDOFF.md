@@ -20,7 +20,7 @@ The API serves the most recently loaded detection run. A `503` means the databas
 | Dashboard | `GET /summary` | Show totals, score buckets, and review-status totals. |
 | Ranked rings | `GET /rings` | Render `items` in returned order; the server ranks by score. |
 | Ring filters | `GET /rings` with query parameters | Send filters to the API; do not reimplement them client-side. |
-| Ring detail | `GET /rings/{ring_id}` | Use `nodes` and `edges` directly for the relationship graph. |
+| Ring detail | `GET /rings/{ring_id}` | Use `nodes` and `edges` directly for the relationship graph; present resilience separately from risk. |
 | Account detail | `GET /accounts/{account_id}` | Open from a ring member and show features, reasons, and transactions. |
 | Review status | `PATCH /rings/{ring_id}/status` | Send `{"status":"reviewing"}` and replace local status from the response. |
 
@@ -125,6 +125,9 @@ Unknown future codes should fall back to title-cased text instead of breaking th
   "mean_ml_score": 0.99954458,
   "max_ml_score": 0.9997344,
   "temporal_concentration": 0.995238,
+  "detection_resilience": "moderate",
+  "min_entity_removals": 3,
+  "critical_entity_types": ["device", "ip", "payment_instrument"],
   "members": [{"account_id": "acct_000036", "ml_score": 0.9997344, "reason_codes": ["SHARED_PAYMENT_INSTRUMENT", "SHARED_DEVICE", "HIGH_PROMOTION_RATIO"]}],
   "shared_entities": [{"id": "device:device_ring_008", "type": "device", "label": "device_ring_008"}],
   "nodes": [

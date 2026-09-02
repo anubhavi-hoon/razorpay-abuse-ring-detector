@@ -9,6 +9,7 @@ import {
   getRiskLevel,
   REVIEW_TRANSITIONS,
   getTransitionLabel,
+  formatEntityType,
 } from '../constants';
 import { useToast } from '../components/toastContext';
 import RelationshipGraph from '../components/RelationshipGraph';
@@ -264,7 +265,57 @@ export default function RingDetailScreen() {
         <RelationshipGraph nodes={data.nodes} edges={data.edges} />
       </div>
 
-      {/* 4. Supporting metrics */}
+      {/* 4. Structural resilience, independent of risk scoring */}
+      <div className="panel resilience-panel">
+        <div className="panel-header">Detection resilience</div>
+        {data.detection_resilience && data.min_entity_removals !== null ? (
+          <>
+            <div className="resilience-summary">
+              <div>
+                <span className="resilience-label">Resilience</span>
+                <strong className="resilience-level">
+                  {data.detection_resilience[0].toUpperCase() +
+                    data.detection_resilience.slice(1)}
+                </strong>
+              </div>
+              <div>
+                <span className="resilience-label">Minimum evidence losses</span>
+                <strong className="resilience-count mono">
+                  {data.min_entity_removals}
+                </strong>
+              </div>
+            </div>
+            <p className="resilience-explanation">
+              At least {data.min_entity_removals} shared evidence{' '}
+              {data.min_entity_removals === 1 ? 'node must' : 'nodes must'} become
+              unavailable before fewer than half of these accounts remain connected
+              as one case. This is structural resilience, not fraud likelihood or
+              attacker effort, and it does not affect the risk score.
+            </p>
+            <div className="resilience-dependencies">
+              <span className="resilience-label">Critical dependencies</span>
+              {data.critical_entity_types.length > 0 ? (
+                <div className="resilience-chips">
+                  {data.critical_entity_types.map((type) => (
+                    <span key={type}>{formatEntityType(type)}</span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-secondary">
+                  No single signal type appears in every minimum evidence-loss path.
+                </span>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="text-secondary">
+            Exact resilience analysis is not available for this unusually broad
+            component.
+          </p>
+        )}
+      </div>
+
+      {/* 5. Supporting metrics */}
       <div className="panel ring-metrics-panel">
         <div className="panel-header">Supporting Metrics</div>
         <div className="metrics-grid">
@@ -311,7 +362,7 @@ export default function RingDetailScreen() {
         </div>
       </div>
 
-      {/* 5. Members table (accessible fallback) */}
+      {/* 6. Members table (accessible fallback) */}
       <div className="panel ring-members-panel">
         <div className="panel-header">Member Accounts</div>
         <div className="table-responsive">
@@ -348,7 +399,7 @@ export default function RingDetailScreen() {
         </div>
       </div>
 
-      {/* 6. Shared entities table */}
+      {/* 7. Shared entities table */}
       <div className="panel ring-entities-panel">
         <div className="panel-header">Shared Identifiers</div>
         <div className="table-responsive">

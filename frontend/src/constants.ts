@@ -52,6 +52,29 @@ export function getReasonSentence(code: string): string {
   return REASON_CODE_SENTENCES[code] ?? `${getReasonLabel(code)}.`;
 }
 
+/** Return a readable label for graph entity types. */
+export function formatEntityType(type: string): string {
+  const labels: Record<string, string> = {
+    account: 'Account',
+    device: 'Device',
+    ip: 'IP Address',
+    ip_address: 'IP Address',
+    payment_instrument: 'Payment Instrument',
+    email: 'Email Hash',
+    phone: 'Phone Hash',
+    merchant: 'Merchant',
+    promotion: 'Promotion',
+  };
+  const normalized = type.toLowerCase().replace(/_id$|_hash$/, '');
+  return (
+    labels[normalized] ??
+    normalized
+      .split('_')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ')
+  );
+}
+
 /**
  * Allowed review-status transitions.
  * Key = current status, value = list of allowed next statuses.

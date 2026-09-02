@@ -2,38 +2,12 @@ import { useMemo, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { GraphNode, GraphEdge } from '../types';
+import { formatEntityType } from '../constants';
 import './RelationshipGraph.css';
 
 interface Props {
   nodes: GraphNode[];
   edges: GraphEdge[];
-}
-
-function formatEntityType(type: string): string {
-  const normalized = type.toLowerCase().replace(/_id$|_hash$/, '');
-  const labels: Record<string, string> = {
-    account: 'Account',
-    device: 'Device',
-    device_id: 'Device',
-    ip: 'IP Address',
-    ip_address: 'IP Address',
-    payment_instrument: 'Payment Instrument',
-    payment_instrument_id: 'Payment Instrument',
-    email: 'Email Hash',
-    email_hash: 'Email Hash',
-    phone: 'Phone Hash',
-    phone_hash: 'Phone Hash',
-    merchant: 'Merchant',
-    merchant_id: 'Merchant',
-    promotion: 'Promotion',
-    promotion_id: 'Promotion',
-  };
-  if (labels[type.toLowerCase()]) return labels[type.toLowerCase()];
-  if (labels[normalized]) return labels[normalized];
-  return type
-    .split('_')
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ');
 }
 
 function graphTypeClass(type: string): string {

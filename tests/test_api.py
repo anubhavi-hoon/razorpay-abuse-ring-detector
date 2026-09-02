@@ -76,6 +76,15 @@ class ApiTest(unittest.TestCase):
                 self.assertTrue(detail.json()["shared_entities"])
                 self.assertTrue(detail.json()["nodes"])
                 self.assertTrue(detail.json()["edges"])
+                if detail.json()["detection_resilience"] is None:
+                    self.assertIsNone(detail.json()["min_entity_removals"])
+                else:
+                    self.assertIn(
+                        detail.json()["detection_resilience"],
+                        {"low", "moderate", "high"},
+                    )
+                    self.assertGreaterEqual(detail.json()["min_entity_removals"], 1)
+                self.assertIsInstance(detail.json()["critical_entity_types"], list)
 
                 account_id = detail.json()["members"][0]["account_id"]
                 account = client.get(f"/api/v1/accounts/{account_id}")

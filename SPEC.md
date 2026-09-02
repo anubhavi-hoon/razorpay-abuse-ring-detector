@@ -152,6 +152,12 @@ Ignore singleton components in the ring list, while retaining their account scor
 
 Use a documented weighted formula normalized to 0–1. The initial weights are configuration values, not learned parameters. Rank rings by score descending. Do not claim the ring score is a calibrated probability.
 
+### Detection resilience
+
+For review-sized detected rings, compute a separate structural resilience result from the accepted account–entity bipartite graph. Find the minimum number of shared entity nodes whose loss leaves no residual account component containing at least half of the original members; a two-member ring is considered fragmented when only isolated accounts remain. Classify one required loss as `low`, two or three as `moderate`, and four or more as `high`.
+
+`critical_entity_types` is the intersection of entity-type sets across every minimum cut, not a suggested action. The result describes dependence on available evidence; it is not fraud likelihood, real attacker cost, or an evasion playbook. It must not change ring detection, score, rank, thresholds, or review status. Exact analysis is deliberately omitted for unusually broad components with more than 12 accepted shared entities because balanced node-cut search is exponential.
+
 ## 9. Evaluation
 
 Use a stratified train/test split with a fixed seed and avoid leaking `ring_label` across splits: all members of a planted ring must remain in the same split.
@@ -179,7 +185,7 @@ JSON REST API under `/api/v1`:
 - `GET /health` — liveness and database availability;
 - `GET /summary` — counts, score distribution, and review-status totals;
 - `GET /rings` — paginated ranked rings with score/status/date/promotion filters;
-- `GET /rings/{ring_id}` — ring details, reasons, members, shared entities, and graph nodes/edges;
+- `GET /rings/{ring_id}` — ring details, reasons, detection resilience, members, shared entities, and graph nodes/edges;
 - `PATCH /rings/{ring_id}/status` — validate and update review status;
 - `GET /accounts/{account_id}` — account score, features, reasons, and transactions.
 
