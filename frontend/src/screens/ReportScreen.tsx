@@ -1039,7 +1039,8 @@ export default function ReportScreen() {
                     <p>
                       Individual accounts are evaluated with a supervised classifier assessing account
                       creation velocity, transaction burst cadence, promotion reuse intensity, and
-                      identity similarity heuristics. Scores range from 0 to 1, pinpointing synthetic accounts.
+                      identity similarity heuristics. Higher scores indicate account behaviour associated
+                      with coordinated promotional abuse.
                     </p>
                   </div>
                 </div>

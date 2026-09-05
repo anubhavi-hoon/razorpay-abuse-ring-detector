@@ -36,9 +36,9 @@ const DEMO_RESULTS = [
   { value: '2,000', label: 'Accounts analyzed' },
   { value: '10,000', label: 'Transactions processed' },
   { value: '15', label: 'Planted abuse rings' },
-  { value: '208', label: 'Candidate components' },
+  { value: '215', label: 'Candidate components' },
   { value: '15 / 15', label: 'Rings in top 20' },
-  { value: '0.28s', label: 'Pipeline runtime' },
+  { value: '0.31s', label: 'Pipeline runtime' },
 ] as const;
 
 const TECH_NODES = [
@@ -841,8 +841,8 @@ export default function LandingScreen() {
                   </div>
                   <div className="mock-row" style={{ gap: 12 }}>
                     <span style={{ fontSize: '0.75rem', color: 'var(--landing-text-muted)' }}>Accounts: 2,000</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--landing-text-muted)' }}>Rings: 208</span>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--landing-text-muted)' }}>Flagged: 476</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--landing-text-muted)' }}>Rings: 215</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--landing-text-muted)' }}>Flagged: 96</span>
                   </div>
                   <div className="mock-bar" style={{ width: '100%' }}>
                     <div className="mock-bar-fill" style={{ width: '65%', background: 'hsl(4, 58%, 70%)' }} />

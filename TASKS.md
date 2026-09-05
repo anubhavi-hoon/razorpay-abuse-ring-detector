@@ -163,17 +163,17 @@ Acceptance:
 
 Deliverables:
 
-- [ ] Add a minimal production container and startup command.
-- [ ] Document local SQLite deployment and one modest hosted PostgreSQL option.
-- [ ] Ensure migrations and one-off data loading are explicit deployment steps.
-- [ ] Run tests, the full seeded pipeline, API smoke checks, and the demo flow.
-- [ ] Record exact demo commands and known limitations.
+- [x] Add a minimal Render Blueprint with explicit build and startup commands.
+- [x] Document local SQLite deployment and the hosted PostgreSQL setup.
+- [x] Ensure migrations and one-off data loading are explicit deployment steps.
+- [x] Run tests, the full seeded pipeline, API smoke checks, and the demo flow.
+- [x] Record the demo commands and known free-tier limitations.
 
 Acceptance:
 
-- [ ] A clean checkout can reproduce the backend and detection results.
-- [ ] No secrets, real personal data, or machine-specific paths are committed.
-- [ ] Deployment uses one API service and one small database at most.
+- [x] A clean checkout can reproduce the backend and detection results.
+- [x] No secrets, real personal data, or machine-specific paths are committed.
+- [x] Deployment uses one API service and one small database at most.
 
 ## Milestone 10 — Detection resilience
 

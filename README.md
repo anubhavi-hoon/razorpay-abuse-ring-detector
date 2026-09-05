@@ -6,7 +6,7 @@ SybilTrace detects and prioritizes coordinated multi-account promotional abuse u
 
 ## Current status
 
-The backend and frozen frontend contract are complete. Detection features are implemented milestone by milestone in [`TASKS.md`](TASKS.md).
+The Buildathon prototype is complete and deployed on Render. Open the [live SybilTrace application](https://anubhavi-razorpay-abuse.onrender.com/) or review the implementation milestones in [`TASKS.md`](TASKS.md).
 
 ## Setup
 
@@ -87,7 +87,11 @@ The loader transactionally replaces the same run ID without duplicates and prese
 uvicorn abuse_detector.api:app --reload
 ```
 
-The API is served under `http://127.0.0.1:8000/api/v1`; interactive OpenAPI documentation is available at `/docs`. It serves the latest loaded run, caps ring pages at 100 items, and accepts frontend origins only from the comma-separated `ALLOWED_ORIGINS` environment variable. Ring-list filters are `min_score`, `status`, exact `promotion`, and inclusive `date_from`/`date_to` based on the earliest member signup date; summary score buckets are low (`<0.5`), medium (`0.5–<0.8`), and high (`>=0.8`). The dashboard can export the active ranked ring report as CSV or JSON.
+The API is served under `http://127.0.0.1:8000/api/v1`; interactive OpenAPI documentation is available at `/docs`. It serves the latest loaded run, caps ring pages at 100 items, and accepts frontend origins only from the comma-separated `ALLOWED_ORIGINS` environment variable. Ring-list filters are `min_score`, `status`, exact `promotion`, and inclusive `date_from`/`date_to` based on the earliest member signup date; summary score buckets are low (`<0.5`), medium (`0.5–<0.8`), and high (`>=0.8`). The dashboard includes an interactive current-run report and exports it as PDF, CSV, or JSON.
+
+## Deployment
+
+[`render.yaml`](render.yaml) defines the deployed static frontend, FastAPI service, and managed PostgreSQL database. The API startup command applies Alembic migrations and loads the versioned synthetic demo only when it is missing. Render's free API instance can take about a minute to wake after inactivity; the landing page starts that wake-up in the background and the dashboard reports the delay honestly.
 
 Antigravity should use the frozen [`OpenAPI contract`](docs/openapi.json) and [`frontend handoff`](docs/FRONTEND_HANDOFF.md). The handoff includes screen-to-endpoint mapping, filters, pagination, status transitions, reason labels, and representative payloads.
 
