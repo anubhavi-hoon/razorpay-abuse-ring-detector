@@ -39,10 +39,13 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--accent-blue-light);
-  color: var(--accent-blue);
   flex-shrink: 0;
+}
+
+.sidebar-brand-badge img {
+  display: block;
+  width: 28px;
+  height: 28px;
 }
 
 .sidebar-brand-text {

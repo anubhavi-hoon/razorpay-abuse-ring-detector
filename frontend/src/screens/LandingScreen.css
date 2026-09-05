@@ -112,12 +112,16 @@
 .landing-nav-mark {
   width: 28px;
   height: 28px;
-  background: var(--landing-accent);
-  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.landing-nav-mark img {
+  display: block;
+  width: 28px;
+  height: 28px;
 }
 
 .landing-nav-brand-text {

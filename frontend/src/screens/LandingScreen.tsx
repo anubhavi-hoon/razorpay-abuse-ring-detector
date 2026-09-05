@@ -426,18 +426,7 @@ function LandingNav() {
       <div className="landing-nav-inner">
         <a href="#/" className="landing-nav-brand">
           <span className="landing-nav-mark" aria-hidden="true">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="#fff"
-              strokeWidth="1.5"
-            >
-              <circle cx="5" cy="5" r="3" />
-              <circle cx="11" cy="11" r="3" />
-              <path d="M7 7l2 2" strokeLinecap="round" />
-            </svg>
+            <img src="/sybiltrace-icon.png" alt="" />
           </span>
           <span className="landing-nav-brand-text">SybilTrace</span>
         </a>
