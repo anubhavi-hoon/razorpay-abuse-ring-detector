@@ -7,6 +7,7 @@ import type {
   ReviewStatus,
   RingFilterParams,
   AnalyzeResponse,
+  ReportResponse,
 } from './types';
 
 const API_BASE =
@@ -91,8 +92,12 @@ export function fetchSummary(): Promise<SummaryResponse> {
   return get<SummaryResponse>('/summary');
 }
 
-export function reportUrl(format: 'csv' | 'json'): string {
+export function reportUrl(format: 'csv' | 'json' | 'pdf'): string {
   return `${API_BASE}/reports/current.${format}`;
+}
+
+export function fetchReportJson(): Promise<ReportResponse> {
+  return get<ReportResponse>('/reports/current.json');
 }
 
 export function fetchRings(params: RingFilterParams = {}): Promise<RingPage> {

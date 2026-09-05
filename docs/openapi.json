@@ -883,6 +883,25 @@
         ]
       }
     },
+    "/api/v1/reports/current.pdf": {
+      "get": {
+        "operationId": "export_pdf_api_v1_reports_current_pdf_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Pdf",
+        "tags": [
+          "review"
+        ]
+      }
+    },
     "/api/v1/rings": {
       "get": {
         "operationId": "list_rings_api_v1_rings_get",

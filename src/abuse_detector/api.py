@@ -36,6 +36,7 @@ from .db import (
     create_database_engine,
     load_pipeline_run,
 )
+from .pdf_report import build_pdf_report
 from .pipeline import run_pipeline
 
 ReviewStatus = Literal["new", "reviewing", "confirmed", "dismissed"]
@@ -275,6 +276,24 @@ def create_app(
             media_type="text/csv",
             headers={
                 "Content-Disposition": f'attachment; filename="abuse-ring-report-{run_id}.csv"'
+            },
+        )
+
+    @app.get("/api/v1/reports/current.pdf", tags=["review"])
+    def export_pdf(session: Session = Depends(get_session)) -> Response:
+        run_id = _current_run_id(session)
+        summary_data = summary(session)
+        rings = _report_rows(session, run_id)
+        pdf_bytes = build_pdf_report(
+            summary_data=summary_data,
+            rings=rings,
+            exported_at=datetime.now(timezone.utc).isoformat(),
+        )
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="abuse-ring-report-{run_id}.pdf"'
             },
         )
 

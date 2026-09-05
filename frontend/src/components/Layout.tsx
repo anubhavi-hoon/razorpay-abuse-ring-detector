@@ -22,6 +22,8 @@ function Breadcrumbs() {
 
     if (seg === 'dashboard') {
       continue;
+    } else if (seg === 'report') {
+      crumbs.push({ label: 'Analysis Report', path: '/report' });
     } else if (seg === 'rings') {
       crumbs.push({ label: 'Rings', path: '/rings' });
     } else if (seg === 'accounts') {
@@ -125,6 +127,20 @@ export default function Layout() {
                 </svg>
               </span>
               Overview
+            </NavLink>
+            <NavLink
+              to="/report"
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'sidebar-link--active' : ''}`
+              }
+            >
+              <span className="sidebar-link-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M3 2h7l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" />
+                  <path d="M10 2v4h4M5 8h6M5 11h4" strokeLinecap="round" />
+                </svg>
+              </span>
+              Analysis Report
             </NavLink>
             <NavLink
               to="/rings"

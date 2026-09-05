@@ -282,7 +282,20 @@ export default function DashboardScreen() {
         <div className="panel dashboard-metrics">
           <div className="dashboard-panel-heading">
             <div className="panel-header">Run summary</div>
-            <div className="dashboard-export-actions" aria-label="Export current report">
+            <div className="dashboard-export-actions" aria-label="Export or view report">
+              <Link to="/report" className="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M3 2h7l4 4v8a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" />
+                  <path d="M10 2v4h4M5 8h6M5 11h4" strokeLinecap="round" />
+                </svg>
+                View Report
+              </Link>
+              <a className="btn" href={reportUrl('pdf')} download>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M8 2v8m0 0l-3-3m3 3l3-3M3 12v1a1 1 0 001 1h8a1 1 0 001-1v-1" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Download PDF
+              </a>
               <a className="btn" href={reportUrl('csv')}>Export CSV</a>
               <a className="btn" href={reportUrl('json')}>Export JSON</a>
             </div>

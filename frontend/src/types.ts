@@ -133,3 +133,27 @@ export interface RingFilterParams {
   date_from?: string | null;
   date_to?: string | null;
 }
+
+export interface ReportRow {
+  rank: number;
+  run_id: string;
+  ring_id: string;
+  risk_level: 'high' | 'medium' | 'low';
+  ring_score: number;
+  review_status: ReviewStatus;
+  created_at: string;
+  member_count: number;
+  shared_entity_count: number;
+  entity_types: string[];
+  promotion_ids: string[];
+  reason_codes: string[];
+  detection_resilience: 'low' | 'moderate' | 'high' | null;
+  min_entity_removals: number | null;
+  critical_entity_types: string[];
+}
+
+export interface ReportResponse {
+  exported_at: string;
+  summary: SummaryResponse;
+  rings: ReportRow[];
+}
