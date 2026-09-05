@@ -439,7 +439,7 @@ function LandingNav() {
               <path d="M7 7l2 2" strokeLinecap="round" />
             </svg>
           </span>
-          <span className="landing-nav-brand-text">Abuse Ring Detector</span>
+          <span className="landing-nav-brand-text">SybilTrace</span>
         </a>
 
         <ul className="landing-nav-links">
@@ -619,7 +619,7 @@ export default function LandingScreen() {
             <div className="landing-hero-grid">
               <div className="landing-hero-copy">
                 <p className="landing-hero-eyebrow">
-                  Coordinated promotion-abuse detection
+                  Ring-first intelligence for coordinated promotional abuse
                 </p>
                 <h1>
                   See the ring,{' '}
@@ -628,7 +628,7 @@ export default function LandingScreen() {
                   </span>
                 </h1>
                 <p className="landing-hero-body">
-                  Abuse Ring Detector combines account behavior with shared
+                  SybilTrace combines account behavior with shared
                   devices, networks, payment methods, and promotion activity to
                   surface coordinated abuse as explainable investigation cases.
                 </p>
@@ -1174,7 +1174,7 @@ export default function LandingScreen() {
         <div className="landing-footer-inner">
           <div className="landing-footer-brand">
             <span className="landing-footer-brand-name">
-              Abuse Ring Detector
+              SybilTrace
             </span>
             <span className="landing-footer-brand-sub">
               Razorpay Buildathon project

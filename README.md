@@ -1,6 +1,8 @@
-# Razorpay Abuse Ring Detector
+# SybilTrace
 
-Buildathon project for detecting coordinated multi-account promotional abuse using lightweight machine learning and relationship/graph analysis.
+**Ring-first intelligence for coordinated promotional abuse.**
+
+SybilTrace detects and prioritizes coordinated multi-account promotional abuse using interpretable account-level ML signals and relationship-graph analysis. It is analyst decision support, not an automatic fraud-blocking system.
 
 ## Current status
 

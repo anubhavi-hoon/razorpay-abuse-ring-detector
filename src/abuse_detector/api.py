@@ -191,7 +191,7 @@ def create_app(
             for origin in os.getenv("ALLOWED_ORIGINS", "").split(",")
             if origin.strip()
         ]
-    app = FastAPI(title="Razorpay Abuse Ring Detector", version=__version__)
+    app = FastAPI(title="SybilTrace", version=__version__)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins,

@@ -1,4 +1,4 @@
-# Razorpay Abuse Ring Detector — Frontend
+# SybilTrace — Frontend
 
 Investigation-workbench dashboard for exploring multi-account abuse rings, relationship graphs, account features, and review workflows.
 

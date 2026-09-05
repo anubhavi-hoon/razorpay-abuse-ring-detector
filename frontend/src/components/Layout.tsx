@@ -106,7 +106,7 @@ export default function Layout() {
               </svg>
             </div>
             <div className="sidebar-brand-text">
-              <span className="sidebar-brand-name">Abuse Detector</span>
+              <span className="sidebar-brand-name">SybilTrace</span>
               <span className="sidebar-brand-sub">Fraud Workbench</span>
             </div>
           </div>

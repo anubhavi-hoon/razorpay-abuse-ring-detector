@@ -1,4 +1,4 @@
-"""Designed executive PDF export for the Coordinated Abuse Ring Detector."""
+"""Designed executive PDF export for SybilTrace."""
 
 from __future__ import annotations
 
@@ -75,7 +75,7 @@ class NumberedCanvas(canvas.Canvas):
             self.drawString(
                 40,
                 758,
-                "Razorpay Abuse Detector  •  Coordinated Promotional Abuse Analysis",
+                "SybilTrace  •  Coordinated Promotional Abuse Analysis",
             )
             self.setStrokeColor(BORDER_LIGHT)
             self.setLineWidth(0.5)
@@ -277,7 +277,7 @@ def build_pdf_report(
 
     header_table_data = [
         [
-            Paragraph("RAZORPAY ABUSE DETECTOR", subtitle_style),
+            Paragraph("SYBILTRACE", subtitle_style),
             Paragraph(f"<b>Run ID:</b> {run_id}", meta_val),
         ],
         [

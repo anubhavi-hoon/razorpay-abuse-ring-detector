@@ -283,7 +283,7 @@ export default function ReportScreen() {
           <div>
             <div className="report-product-badge">
               <span className="report-badge-dot" aria-hidden="true" />
-              <span>Razorpay Fraud Workbench • Live Run</span>
+              <span>SybilTrace • Live Run</span>
             </div>
             <h1 className="report-title">Coordinated Promotional Abuse Analysis</h1>
             <p className="report-subtitle">
