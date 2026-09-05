@@ -371,15 +371,58 @@ label {
 
 .reason-pill {
   display: inline-block;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 500;
-  padding: 2px var(--sp-2);
-  border: 1px solid var(--border);
+  padding: 3px var(--sp-2);
+  border: 1px solid hsl(213, 40%, 78%);
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  background: var(--bg-surface-alt);
+  color: hsl(213, 45%, 28%);
+  background: hsl(213, 55%, 94%);
   white-space: nowrap;
   line-height: 1.6;
+}
+
+/* ================================================================== */
+/*  Evidence stack (investigation signals)                            */
+/* ================================================================== */
+
+.evidence-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+}
+
+.evidence-item {
+  position: relative;
+  display: block;
+  padding-left: 9px;
+  font-size: 0.8rem;
+  line-height: 1.42;
+  color: var(--text-primary);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.evidence-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 2.5px;
+  height: 10px;
+  background: var(--accent-blue);
+  border-radius: 1px;
+}
+
+.evidence-overflow {
+  display: inline-block;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding-left: 9px;
+  margin-top: 1px;
+  letter-spacing: 0.01em;
 }
 
 /* ================================================================== */

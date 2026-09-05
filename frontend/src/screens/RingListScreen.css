@@ -76,6 +76,7 @@
 .ring-table th,
 .ring-table td {
   white-space: nowrap;
+  vertical-align: top;
 }
 
 .ring-id-link {
@@ -96,19 +97,20 @@
   color: var(--accent-blue);
 }
 
-/* Entity types and reason code columns may wrap */
-.ring-table td:nth-child(6),
-.ring-table td:nth-child(7) {
+/* Entity types column may wrap */
+.ring-table th:nth-child(6),
+.ring-table td:nth-child(6) {
   white-space: normal;
   min-width: 140px;
 }
 
-/* Reason pills in table */
-.reason-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-1);
-  align-items: center;
+/* Evidence column: approximately 340–420px of useful width on desktop */
+.ring-table th:nth-child(7),
+.ring-table td:nth-child(7) {
+  white-space: normal;
+  min-width: 340px;
+  max-width: 420px;
+  width: 380px;
 }
 
 /* ------------------------------------------------------------------ */

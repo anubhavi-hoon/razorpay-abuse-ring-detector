@@ -327,14 +327,14 @@ export default function RingListScreen() {
                       <td className="mono">{ring.shared_entity_count}</td>
                       <td>{ring.entity_types.join(', ')}</td>
                       <td>
-                        <div className="reason-pills">
+                        <div className="evidence-stack">
                           {shown.map((label, i) => (
-                            <span key={i} className="reason-pill">
+                            <span key={i} className="evidence-item">
                               {label}
                             </span>
                           ))}
                           {overflow > 0 && (
-                            <span className="text-muted" style={{ fontSize: '0.75rem' }}>
+                            <span className="evidence-overflow">
                               +{overflow} more
                             </span>
                           )}

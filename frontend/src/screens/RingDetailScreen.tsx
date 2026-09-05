@@ -375,25 +375,67 @@ export default function RingDetailScreen() {
               </tr>
             </thead>
             <tbody>
-              {data.members.map((m) => (
-                <tr key={m.account_id}>
-                  <td>
-                    <Link to={`/accounts/${m.account_id}`} className="mono">
-                      {m.account_id}
-                    </Link>
-                  </td>
-                  <td className="mono">{formatScore(m.ml_score)}</td>
-                  <td>
-                    <div className="reason-pills">
-                      {m.reason_codes.map((code) => (
-                        <span key={code} className="reason-pill">
-                          {getReasonSentence(code)}
+              {data.members.map((m) => {
+                const memberScoreColor =
+                  m.ml_score >= 0.8
+                    ? 'var(--score-high)'
+                    : m.ml_score >= 0.5
+                      ? 'var(--score-medium)'
+                      : 'var(--score-low)';
+                const memberRiskLabel = getRiskLevel(m.ml_score);
+
+                return (
+                  <tr key={m.account_id}>
+                    <td className="member-cell-account">
+                      <Link
+                        to={`/accounts/${m.account_id}`}
+                        className="mono member-account-link"
+                      >
+                        <span className="member-account-marker" aria-hidden="true">
+                          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 8a3 3 0 100-6 3 3 0 000 6zm-5 7a5 5 0 0110 0H3z" />
+                          </svg>
                         </span>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <span className="member-account-id">{m.account_id}</span>
+                        <span className="member-account-arrow" aria-hidden="true">→</span>
+                      </Link>
+                    </td>
+                    <td className="member-cell-risk">
+                      <div className="member-risk-score">
+                        <span
+                          className="member-risk-label"
+                          style={{ color: memberScoreColor }}
+                        >
+                          {memberRiskLabel}
+                        </span>
+                        <div className="member-score-bar-wrap">
+                          <div className="member-score-bar">
+                            <div
+                              className="member-score-bar-fill"
+                              style={{
+                                width: `${m.ml_score * 100}%`,
+                                background: memberScoreColor,
+                              }}
+                            />
+                          </div>
+                          <span className="member-score-pct mono">
+                            {formatScore(m.ml_score)}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="member-cell-evidence">
+                      <div className="evidence-stack">
+                        {m.reason_codes.map((code) => (
+                          <span key={code} className="evidence-item">
+                            {getReasonSentence(code)}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

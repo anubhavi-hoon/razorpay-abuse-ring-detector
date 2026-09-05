@@ -143,6 +143,150 @@
   font-weight: 500;
 }
 
+.ring-reasons-panel .reason-pill {
+  white-space: normal;
+  max-width: 100%;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Member accounts table                                              */
+/* ------------------------------------------------------------------ */
+
+.ring-members-panel th:nth-child(1),
+.ring-members-panel td:nth-child(1) {
+  width: 190px;
+  min-width: 170px;
+}
+
+.ring-members-panel th:nth-child(2),
+.ring-members-panel td:nth-child(2) {
+  width: 140px;
+  min-width: 130px;
+}
+
+.ring-members-panel th:nth-child(3),
+.ring-members-panel td:nth-child(3) {
+  min-width: 260px;
+}
+
+.ring-members-panel td {
+  padding: 14px var(--sp-4);
+  vertical-align: top;
+}
+
+.ring-members-panel tbody tr {
+  border-left: 3px solid transparent;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ring-members-panel tbody tr {
+    transition: background-color 160ms ease, border-left-color 160ms ease;
+  }
+}
+
+.ring-members-panel tbody tr:hover,
+.ring-members-panel tbody tr:focus-within {
+  background-color: hsl(213, 55%, 97%) !important;
+  border-left-color: var(--accent-blue);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Member account cell                                                */
+/* ------------------------------------------------------------------ */
+
+.member-account-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  border-radius: var(--radius-sm);
+}
+
+.member-account-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.member-account-id {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.member-account-arrow {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .member-account-arrow {
+    transition: transform 160ms ease, color 160ms ease;
+  }
+}
+
+.member-account-link:hover .member-account-arrow {
+  transform: translateX(3px);
+  color: var(--accent-blue);
+}
+
+.member-account-link:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Member ML score cell                                               */
+/* ------------------------------------------------------------------ */
+
+.member-risk-score {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+}
+
+.member-risk-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.member-score-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.member-score-bar {
+  width: 52px;
+  height: 5px;
+  background: var(--border-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.member-score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.member-score-pct {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
 /* ------------------------------------------------------------------ */
 /*  Responsive Breakpoints                                             */
 /* ------------------------------------------------------------------ */
@@ -174,6 +318,73 @@
 
   .relationship-panel {
     padding: var(--sp-4);
+  }
+
+  /* Member accounts stacked investigation card at 390px / <= 640px */
+  .ring-members-panel .table-responsive {
+    overflow-x: visible;
+  }
+
+  .ring-members-panel table,
+  .ring-members-panel tbody {
+    display: block;
+    width: 100%;
+  }
+
+  .ring-members-panel thead {
+    display: none;
+  }
+
+  .ring-members-panel tbody tr {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    margin-bottom: var(--sp-3);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: var(--radius);
+  }
+
+  .ring-members-panel tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .ring-members-panel td {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Account identity first */
+  .ring-members-panel .member-cell-account {
+    padding-bottom: 2px !important;
+  }
+
+  /* Risk label, percentage, and bar second */
+  .ring-members-panel .member-cell-risk {
+    padding-bottom: var(--sp-2) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+  }
+
+  .ring-members-panel .member-risk-score {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--sp-3);
+  }
+
+  .ring-members-panel .member-score-bar {
+    width: 64px;
+  }
+
+  /* Evidence list below */
+  .ring-members-panel .member-cell-evidence {
+    padding-top: 2px !important;
   }
 }
 
