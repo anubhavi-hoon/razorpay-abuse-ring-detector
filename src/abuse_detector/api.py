@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+import io
 import os
 import tempfile
 import threading
@@ -13,6 +15,7 @@ from typing import Literal
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel
 from sqlalchemy import and_, exists, func, select
 from sqlalchemy.engine import Engine
@@ -238,6 +241,42 @@ def create_app(
             },
             "review_status_totals": status_totals,
         }
+
+    @app.get("/api/v1/reports/current.json", tags=["review"])
+    def export_json(session: Session = Depends(get_session)) -> JSONResponse:
+        run_id = _current_run_id(session)
+        return JSONResponse(
+            {
+                "exported_at": datetime.now(timezone.utc).isoformat(),
+                "summary": summary(session),
+                "rings": _report_rows(session, run_id),
+            },
+            headers={
+                "Content-Disposition": f'attachment; filename="abuse-ring-report-{run_id}.json"'
+            },
+        )
+
+    @app.get("/api/v1/reports/current.csv", tags=["review"])
+    def export_csv(session: Session = Depends(get_session)) -> Response:
+        run_id = _current_run_id(session)
+        rows = _report_rows(session, run_id)
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=list(rows[0]) if rows else _REPORT_FIELDS)
+        writer.writeheader()
+        writer.writerows(
+            {
+                key: ";".join(value) if isinstance(value, list) else value
+                for key, value in row.items()
+            }
+            for row in rows
+        )
+        return Response(
+            output.getvalue(),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f'attachment; filename="abuse-ring-report-{run_id}.csv"'
+            },
+        )
 
     @app.get("/api/v1/rings", response_model=RingPage, tags=["review"])
     def list_rings(
@@ -639,6 +678,59 @@ def _ring_item(ring: Ring, created_at: datetime, promotion_ids: list[str]) -> di
         "promotion_ids": promotion_ids,
         "reason_codes": ring.reason_codes,
     }
+
+
+_REPORT_FIELDS = [
+    "rank",
+    "run_id",
+    "ring_id",
+    "risk_level",
+    "ring_score",
+    "review_status",
+    "created_at",
+    "member_count",
+    "shared_entity_count",
+    "entity_types",
+    "promotion_ids",
+    "reason_codes",
+    "detection_resilience",
+    "min_entity_removals",
+    "critical_entity_types",
+]
+
+
+def _report_rows(session: Session, run_id: str) -> list[dict[str, object]]:
+    ring_dates = _ring_dates()
+    rings = session.execute(
+        select(Ring, ring_dates.c.created_at)
+        .join(
+            ring_dates,
+            and_(ring_dates.c.run_id == Ring.run_id, ring_dates.c.ring_id == Ring.ring_id),
+        )
+        .where(Ring.run_id == run_id)
+        .order_by(Ring.score.desc(), Ring.ring_id)
+    ).all()
+    promotions = _promotions_by_ring(session, run_id, [ring.ring_id for ring, _ in rings])
+    return [
+        {
+            "rank": rank,
+            "run_id": run_id,
+            "ring_id": ring.ring_id,
+            "risk_level": "high" if ring.score >= 0.8 else "medium" if ring.score >= 0.5 else "low",
+            "ring_score": ring.score,
+            "review_status": ring.status,
+            "created_at": _as_utc(created_at).isoformat(),
+            "member_count": ring.member_count,
+            "shared_entity_count": ring.shared_entity_count,
+            "entity_types": ring.entity_types,
+            "promotion_ids": promotions[ring.ring_id],
+            "reason_codes": ring.reason_codes,
+            "detection_resilience": ring.detection_resilience,
+            "min_entity_removals": ring.min_entity_removals,
+            "critical_entity_types": ring.critical_entity_types or [],
+        }
+        for rank, (ring, created_at) in enumerate(rings, 1)
+    ]
 
 
 def _entity_label(entity_id: str) -> str:

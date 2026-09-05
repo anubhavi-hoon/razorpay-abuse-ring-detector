@@ -18,6 +18,7 @@ The API serves the most recently loaded detection run. A `503` means the databas
 | Screen/action | API call | Presentation rule |
 |---|---|---|
 | Dashboard | `GET /summary` | Show totals, score buckets, and review-status totals. |
+| Report export | `GET /reports/current.csv` or `.json` | Download the active run's ranked ring report. |
 | Ranked rings | `GET /rings` | Render `items` in returned order; the server ranks by score. |
 | Ring filters | `GET /rings` with query parameters | Send filters to the API; do not reimplement them client-side. |
 | Ring detail | `GET /rings/{ring_id}` | Use `nodes` and `edges` directly for the relationship graph; present resilience separately from risk. |

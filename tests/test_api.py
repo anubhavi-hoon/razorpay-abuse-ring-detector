@@ -1,3 +1,5 @@
+import csv
+import io
 import json
 import tempfile
 import unittest
@@ -42,6 +44,19 @@ class ApiTest(unittest.TestCase):
                 self.assertEqual(summary.status_code, 200)
                 self.assertEqual(summary.json()["account_count"], 60)
                 self.assertEqual(sum(summary.json()["score_distribution"].values()), summary.json()["ring_count"])
+
+                json_report = client.get("/api/v1/reports/current.json")
+                self.assertEqual(json_report.status_code, 200)
+                self.assertIn("attachment;", json_report.headers["content-disposition"])
+                self.assertEqual(json_report.json()["summary"], summary.json())
+                self.assertEqual(len(json_report.json()["rings"]), summary.json()["ring_count"])
+
+                csv_report = client.get("/api/v1/reports/current.csv")
+                self.assertEqual(csv_report.status_code, 200)
+                self.assertIn("attachment;", csv_report.headers["content-disposition"])
+                csv_rows = list(csv.DictReader(io.StringIO(csv_report.text)))
+                self.assertEqual(len(csv_rows), summary.json()["ring_count"])
+                self.assertEqual(csv_rows[0]["ring_id"], json_report.json()["rings"][0]["ring_id"])
 
                 rings = client.get("/api/v1/rings", params={"page_size": 2})
                 self.assertEqual(rings.status_code, 200)
@@ -129,6 +144,8 @@ class ApiTest(unittest.TestCase):
                 expected_paths = {
                     "/api/v1/health",
                     "/api/v1/summary",
+                    "/api/v1/reports/current.csv",
+                    "/api/v1/reports/current.json",
                     "/api/v1/rings",
                     "/api/v1/rings/{ring_id}",
                     "/api/v1/rings/{ring_id}/status",

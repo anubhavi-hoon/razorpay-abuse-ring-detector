@@ -184,6 +184,7 @@ JSON REST API under `/api/v1`:
 
 - `GET /health` — liveness and database availability;
 - `GET /summary` — counts, score distribution, and review-status totals;
+- `GET /reports/current.csv` and `GET /reports/current.json` — download the current ranked ring report;
 - `GET /rings` — paginated ranked rings with score/status/date/promotion filters;
 - `GET /rings/{ring_id}` — ring details, reasons, detection resilience, members, shared entities, and graph nodes/edges;
 - `PATCH /rings/{ring_id}/status` — validate and update review status;

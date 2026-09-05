@@ -85,7 +85,7 @@ The loader transactionally replaces the same run ID without duplicates and prese
 uvicorn abuse_detector.api:app --reload
 ```
 
-The API is served under `http://127.0.0.1:8000/api/v1`; interactive OpenAPI documentation is available at `/docs`. It serves the latest loaded run, caps ring pages at 100 items, and accepts frontend origins only from the comma-separated `ALLOWED_ORIGINS` environment variable. Ring-list filters are `min_score`, `status`, exact `promotion`, and inclusive `date_from`/`date_to` based on the earliest member signup date; summary score buckets are low (`<0.5`), medium (`0.5–<0.8`), and high (`>=0.8`).
+The API is served under `http://127.0.0.1:8000/api/v1`; interactive OpenAPI documentation is available at `/docs`. It serves the latest loaded run, caps ring pages at 100 items, and accepts frontend origins only from the comma-separated `ALLOWED_ORIGINS` environment variable. Ring-list filters are `min_score`, `status`, exact `promotion`, and inclusive `date_from`/`date_to` based on the earliest member signup date; summary score buckets are low (`<0.5`), medium (`0.5–<0.8`), and high (`>=0.8`). The dashboard can export the active ranked ring report as CSV or JSON.
 
 Antigravity should use the frozen [`OpenAPI contract`](docs/openapi.json) and [`frontend handoff`](docs/FRONTEND_HANDOFF.md). The handoff includes screen-to-endpoint mapping, filters, pagination, status transitions, reason labels, and representative payloads.
 

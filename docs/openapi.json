@@ -845,6 +845,44 @@
         ]
       }
     },
+    "/api/v1/reports/current.csv": {
+      "get": {
+        "operationId": "export_csv_api_v1_reports_current_csv_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Csv",
+        "tags": [
+          "review"
+        ]
+      }
+    },
+    "/api/v1/reports/current.json": {
+      "get": {
+        "operationId": "export_json_api_v1_reports_current_json_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Json",
+        "tags": [
+          "review"
+        ]
+      }
+    },
     "/api/v1/rings": {
       "get": {
         "operationId": "list_rings_api_v1_rings_get",

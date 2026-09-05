@@ -123,6 +123,29 @@
   grid-column: 1;
 }
 
+.dashboard-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-5);
+}
+
+.dashboard-panel-heading .panel-header {
+  margin-bottom: 0;
+}
+
+.dashboard-export-actions {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.dashboard-export-actions .btn {
+  padding: var(--sp-1) var(--sp-3);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
 .dashboard-scores {
   grid-column: 1;
 }
@@ -449,6 +472,11 @@
 
   .metrics-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .review-status-row {

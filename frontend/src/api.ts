@@ -91,6 +91,10 @@ export function fetchSummary(): Promise<SummaryResponse> {
   return get<SummaryResponse>('/summary');
 }
 
+export function reportUrl(format: 'csv' | 'json'): string {
+  return `${API_BASE}/reports/current.${format}`;
+}
+
 export function fetchRings(params: RingFilterParams = {}): Promise<RingPage> {
   const searchParams = new URLSearchParams();
   if (params.page != null) searchParams.set('page', String(params.page));

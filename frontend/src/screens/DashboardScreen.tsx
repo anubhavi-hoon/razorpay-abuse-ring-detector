@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { analyzeUpload, fetchRings, fetchSummary, ApiError } from '../api';
+import {
+  analyzeUpload,
+  fetchRings,
+  fetchSummary,
+  reportUrl,
+  ApiError,
+} from '../api';
 import type { SummaryResponse, ReviewStatus } from '../types';
 import { SCORE_BUCKETS } from '../constants';
 import { useToast } from '../components/toastContext';
@@ -274,7 +280,13 @@ export default function DashboardScreen() {
       <div className="dashboard-overview-grid">
         {/* Summary metrics */}
         <div className="panel dashboard-metrics">
-          <div className="panel-header">Run summary</div>
+          <div className="dashboard-panel-heading">
+            <div className="panel-header">Run summary</div>
+            <div className="dashboard-export-actions" aria-label="Export current report">
+              <a className="btn" href={reportUrl('csv')}>Export CSV</a>
+              <a className="btn" href={reportUrl('json')}>Export JSON</a>
+            </div>
+          </div>
           <div className="metrics-row">
             <div className="metric">
               <span className="metric-value">{data.account_count.toLocaleString()}</span>
